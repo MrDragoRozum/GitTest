@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "ru.rozum"
+    namespace = "ru.rozum.gitTest"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ru.rozum"
+        applicationId = "ru.rozum.gitTest"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -41,6 +41,9 @@ kapt {
 }
 
 dependencies {
+
+    // MarkWon
+    implementation(libs.core)
 
     // Jetpack Hilt
     implementation(libs.hilt.android)

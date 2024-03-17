@@ -1,4 +1,4 @@
-package ru.rozum
+package ru.rozum.gitTest
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
