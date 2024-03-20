@@ -4,6 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.rozum.gitTest.data.network.dto.*
 
 interface ApiGitHubService {
@@ -12,14 +13,16 @@ interface ApiGitHubService {
     @Headers(BASE_HEADERS)
     suspend fun getUserInfo(@Header(AUTH) token: String): UserInfoDto
 
-    @GET(REPOS_SORTED_PUSHED)
-    @Headers(BASE_HEADERS)
-    suspend fun getRepositories(@Header(AUTH) token: String): List<RepoDto>
-
     @GET(REPO)
     @Headers(BASE_HEADERS)
     suspend fun getRepository(@Header(AUTH) token: String, @Path(ID_REPO) id: Long): RepoDetailsDto
 
+    @GET(REPOS_SORTED_PUSHED)
+    @Headers(BASE_HEADERS)
+    suspend fun getRepositories(
+        @Header(AUTH) token: String,
+        @Query(PAGE) page: Int
+    ): List<RepoDto>
 }
 
 private const val BASE_HEADERS =
@@ -33,3 +36,5 @@ private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED"
 
 private const val ID_REPO = "id"
 private const val REPO = "repositories/{$ID_REPO}"
+
+private const val PAGE = "page"
