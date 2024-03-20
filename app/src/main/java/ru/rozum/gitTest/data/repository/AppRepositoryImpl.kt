@@ -7,7 +7,9 @@ import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
 import ru.rozum.gitTest.exception.UnauthorizedException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,

@@ -2,8 +2,9 @@ package ru.rozum.gitTest.data.mapper
 
 import ru.rozum.gitTest.data.network.dto.*
 import ru.rozum.gitTest.domain.entity.*
+import javax.inject.Inject
 
-class AppMapper {
+class AppMapper @Inject constructor() {
 
     fun mapUserInfoDtoToEntity(dto: UserInfoDto): UserInfo = UserInfo(login = dto.login)
     fun mapRepoDtoToEntity(dto: RepoDto): Repo = Repo(
