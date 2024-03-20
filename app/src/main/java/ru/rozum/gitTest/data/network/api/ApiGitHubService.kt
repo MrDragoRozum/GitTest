@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.data.network.api
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -11,11 +12,11 @@ interface ApiGitHubService {
 
     @GET(USER)
     @Headers(BASE_HEADERS)
-    suspend fun getUserInfo(@Header(AUTH) token: String): UserInfoDto
+    suspend fun getUserInfo(@Header(AUTH) token: String): Response<UserInfoDto>
 
     @GET(REPO)
     @Headers(BASE_HEADERS)
-    suspend fun getRepository(@Header(AUTH) token: String, @Path(ID_REPO) id: Long): RepoDetailsDto
+    suspend fun getRepository(@Header(AUTH) token: String, @Path(ID_REPO) id: String): RepoDetailsDto
 
     @GET(REPOS_SORTED_PUSHED)
     @Headers(BASE_HEADERS)

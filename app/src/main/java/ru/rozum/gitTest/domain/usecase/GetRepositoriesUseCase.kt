@@ -4,5 +4,5 @@ import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.repository.AppRepository
 
 class GetRepositoriesUseCase(private val repository: AppRepository) {
-    suspend operator fun invoke(): List<Repo> = repository.getRepositories()
+    suspend operator fun invoke(page: Int): List<Repo> = repository.getRepositories(page)
 }
