@@ -1,5 +1,12 @@
 package ru.rozum.gitTest.data.network.dto
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class RepoDto(val repositories: List<RepoDetailsDto>)
+@Serializable
+data class RepoDto(
+    @SerialName("id") val id: Long,
+    @SerialName("name") val name: String,
+    @SerialName("description") val description: String?,
+    @SerialName("language") val language: String?,
+)

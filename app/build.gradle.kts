@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -59,8 +60,14 @@ dependencies {
 
     // Retrofit + kotlin-serialization
     implementation(libs.retrofit)
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.converter.scalars)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // okHttp
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
