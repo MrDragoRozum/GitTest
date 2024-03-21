@@ -1,4 +1,4 @@
-package ru.rozum.gitTest
+package ru.rozum.gitTest.presentation.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -12,5 +12,6 @@ import ru.rozum.gitTest.domain.repository.*
 interface RepositoryModule {
 
     @Binds
+    @ApplicationScope
     fun bindAppRepository(impl: AppRepositoryImpl): AppRepository
 }

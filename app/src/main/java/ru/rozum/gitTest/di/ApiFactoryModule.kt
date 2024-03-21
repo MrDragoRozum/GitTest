@@ -16,15 +16,18 @@ import ru.rozum.gitTest.data.network.api.*
 object ApiFactoryModule {
 
     @Provides
+    @ApplicationScope
     fun provideApiService(@ApiQualifier retrofit: Retrofit): ApiGitHubService =
         retrofit.create(ApiGitHubService::class.java)
 
     @Provides
+    @ApplicationScope
     fun provideRawService(@RawQualifier retrofit: Retrofit): RawGitHubService =
         retrofit.create(RawGitHubService::class.java)
 
     @RawQualifier
     @Provides
+    @ApplicationScope
     fun provideRetrofitRaw(): Retrofit =
         Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
@@ -33,6 +36,7 @@ object ApiFactoryModule {
 
     @ApiQualifier
     @Provides
+    @ApplicationScope
     fun provideRetrofitApi(): Retrofit {
         val json = Json { ignoreUnknownKeys = true }
         return Retrofit.Builder()
@@ -40,9 +44,11 @@ object ApiFactoryModule {
             .baseUrl(URL_API_GITHUB)
             .build()
     }
+
+    private const val URL_API_GITHUB = "https://api.github.com/"
+    private const val URL_RAW_GITHUB = "https://raw.githubusercontent.com/"
+    private const val CONTENT_TYPE = "application/vnd.github+json"
 }
 
-private const val URL_API_GITHUB = "https://api.github.com/"
-private const val URL_RAW_GITHUB = "https://raw.githubusercontent.com/"
-private const val CONTENT_TYPE = "application/vnd.github+json"
+
 

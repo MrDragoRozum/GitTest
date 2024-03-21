@@ -5,11 +5,11 @@ import ru.rozum.gitTest.data.mapper.AppMapper
 import ru.rozum.gitTest.data.network.api.*
 import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
-import ru.rozum.gitTest.exception.UnauthorizedException
+import ru.rozum.gitTest.exception.InvalidTokenException
+import ru.rozum.gitTest.exception.ConnectionException
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,
@@ -27,6 +27,7 @@ class AppRepositoryImpl @Inject constructor(
         )
 
     override suspend fun signIn(token: String): UserInfo {
+        if(!token.matches(Regex("^\\w+$"))) throw InvalidTokenException("Invalid token")
         val response = apiGitHubService.getUserInfo(token)
         if (response.isSuccessful) {
             val body = response.body()
@@ -35,7 +36,7 @@ class AppRepositoryImpl @Inject constructor(
                 return mapper.mapUserInfoDtoToEntity(body)
             }
         }
-        throw UnauthorizedException("Auth is failed")
+        throw ConnectionException("${response.code()}\ninformation for developers")
     }
 
     override suspend fun getRepositoryReadme(
