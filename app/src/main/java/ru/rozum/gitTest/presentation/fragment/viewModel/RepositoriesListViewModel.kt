@@ -35,11 +35,7 @@ class RepositoriesListViewModel @Inject constructor(
                         _state.emit(State.Empty)
                     }
                 }
-            }.onException(
-                ConnectException::class,
-                UnknownHostException::class,
-                SocketTimeoutException::class
-            ) {
+            }.onException {
                 _state.emit(State.Error(it.message))
             }.onFailure {
                 _state.emit(State.Error(it.message))
@@ -48,7 +44,11 @@ class RepositoriesListViewModel @Inject constructor(
     }
 
     private inline fun <R, T : R> Result<T>.onException(
-        vararg exceptions: KClass<out Throwable>,
+        vararg exceptions: KClass<out Throwable> = arrayOf(
+            ConnectException::class,
+            UnknownHostException::class,
+            SocketTimeoutException::class
+        ),
         transform: (exception: Throwable) -> T
     ) = recoverCatching { ex ->
         if (ex::class in exceptions) transform(ex)

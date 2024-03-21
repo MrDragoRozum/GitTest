@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Git Test</string>
+    <string name="token_gitHub">token</string>
 </resources>

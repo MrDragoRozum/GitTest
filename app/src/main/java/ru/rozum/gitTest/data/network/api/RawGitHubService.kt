@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.data.network.api
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -9,7 +10,7 @@ interface RawGitHubService {
         @Path(OWNER_PATH) ownerName: String,
         @Path(REPOSITORY_PATH) repositoryName: String,
         @Path(BRANCH_PATH) branchName: String
-    ): String
+    ): Response<String>
 }
 
 private const val OWNER_PATH = "ownerName"

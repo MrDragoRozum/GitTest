@@ -16,7 +16,10 @@ interface ApiGitHubService {
 
     @GET(REPO)
     @Headers(BASE_HEADERS)
-    suspend fun getRepository(@Header(AUTH) token: String, @Path(ID_REPO) id: String): RepoDetailsDto
+    suspend fun getRepository(
+        @Header(AUTH) token: String,
+        @Path(ID_REPO) id: String
+    ): Response<RepoDetailsDto>
 
     @GET(REPOS_SORTED_PUSHED)
     @Headers(BASE_HEADERS)
