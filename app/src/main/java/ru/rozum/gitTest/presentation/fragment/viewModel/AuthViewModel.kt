@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.UserInfo
 import ru.rozum.gitTest.domain.usecase.SignInUseCase
 import ru.rozum.gitTest.exception.InvalidTokenException
-import ru.rozum.gitTest.exception.ConnectionException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,8 +30,8 @@ class AuthViewModel @Inject constructor(private val signInUseCase: SignInUseCase
                 _actions.emit(Action.RouteToMain)
             } catch (token: InvalidTokenException) {
                 _state.emit(State.InvalidInput(token.message))
-            } catch (connection: ConnectionException) {
-                _actions.emit(Action.ShowError(connection.message))
+            } catch (exception: Exception) {
+                _actions.emit(Action.ShowError(exception.message))
             } finally {
                 _state.emit(State.Idle)
             }
@@ -46,7 +45,7 @@ class AuthViewModel @Inject constructor(private val signInUseCase: SignInUseCase
     }
 
     sealed interface Action {
-        data class ShowError(val message: String) : Action
+        data class ShowError(val message: String?) : Action
         data object RouteToMain : Action
     }
 }

@@ -5,5 +5,5 @@ import ru.rozum.gitTest.domain.repository.AppRepository
 import javax.inject.Inject
 
 class GetRepositoriesUseCase @Inject constructor(private val repository: AppRepository) {
-    suspend operator fun invoke(page: Int): List<Repo> = repository.getRepositories(page)
+    suspend operator fun invoke(): List<Repo> = repository.getRepositories()
 }

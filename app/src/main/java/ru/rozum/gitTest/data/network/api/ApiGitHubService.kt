@@ -22,8 +22,7 @@ interface ApiGitHubService {
     @Headers(BASE_HEADERS)
     suspend fun getRepositories(
         @Header(AUTH) token: String,
-        @Query(PAGE) page: Int
-    ): List<RepoDto>
+    ): Response<List<RepoDto>>
 }
 
 private const val BASE_HEADERS =
@@ -37,5 +36,3 @@ private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED"
 
 private const val ID_REPO = "id"
 private const val REPO = "repositories/{$ID_REPO}"
-
-private const val PAGE = "page"
