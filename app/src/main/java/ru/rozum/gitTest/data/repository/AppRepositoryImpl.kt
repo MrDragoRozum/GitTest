@@ -45,12 +45,12 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun getToken(): String = client.getToken()
 
     override suspend fun getRepositories(): List<Repo> = connect(
-        response = apiGitHubService.getRepositories(client.getToken()),
+        response = apiGitHubService.getRepositories(client.getTokenForGitHub()),
         errorMessageException = "Something error",
     ) { answer -> answer.map { mapper.mapRepoDtoToEntity(it) } }
 
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
-        response = apiGitHubService.getRepository(client.getToken(), repoId)
+        response = apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
     ) { mapper.mapRepoDetailsToEntity(it) }
 
     override suspend fun signIn(token: String): UserInfo {
@@ -85,6 +85,7 @@ class AppRepositoryImpl @Inject constructor(
     ): V {
         additionalException.invoke()
         if (response.isSuccessful) {
+            throw Error()
             val body = response.body()
             if (body != null) return result.invoke(body)
         }

@@ -1,11 +1,11 @@
 package ru.rozum.gitTest.presentation.fragment.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.usecase.GetRepositoriesUseCase
@@ -21,24 +21,27 @@ class RepositoriesListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<State>(State.Loading)
-    val state = _state
-        .asStateFlow()
-        .onEach { _state.emit(State.Loading) }
+    val state = _state.asStateFlow()
 
+    init {
+        getRepositories()
+    }
+
+    // TODO: Дополнительную проверку сделать
     fun getRepositories() {
         viewModelScope.launch {
             kotlin.runCatching {
                 getRepositoriesUseCase.invoke().also {
-                    if(it.isNotEmpty()) {
-                        _state.emit(State.Loaded(it))
+                    if (it.isNotEmpty()) {
+                        _state.value = State.Loaded(it)
                     } else {
-                        _state.emit(State.Empty)
+                        _state.value = State.Empty
                     }
                 }
             }.onException {
-                _state.emit(State.Error(it.message))
+                _state.value = State.ConnectionError
             }.onFailure {
-                _state.emit(State.Error(it.message))
+                _state.value = State.SomethingError
             }
         }
     }
@@ -52,12 +55,14 @@ class RepositoriesListViewModel @Inject constructor(
         transform: (exception: Throwable) -> T
     ) = recoverCatching { ex ->
         if (ex::class in exceptions) transform(ex)
+        else throw ex
     }
 
     sealed interface State {
         data object Loading : State
         data class Loaded(val repos: List<Repo>) : State
-        data class Error(val error: String?) : State
+        data object ConnectionError : State
+        data object SomethingError : State
         data object Empty : State
     }
 }

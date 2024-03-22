@@ -18,6 +18,8 @@ class LocalPropertiesClient @Inject constructor(private val sharedPreferences: S
         sharedPreferences.getString(KEY_USER, null) ?: TOKEN_NO_FOUND_EMPTY
     }
 
+    suspend fun getTokenForGitHub() : String = "bearer ${getToken()}"
+
     private companion object {
         const val KEY_USER = "KEY_USER"
         const val TOKEN_NO_FOUND_EMPTY = ""

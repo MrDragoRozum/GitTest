@@ -35,7 +35,7 @@ private const val AUTH = "Authorization"
 private const val USER = "user"
 private const val REPOS = "$USER/repos"
 private const val SORTED_PUSHED = "sort=pushed"
-private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED"
+private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED&page=3"
 
 private const val ID_REPO = "id"
 private const val REPO = "repositories/{$ID_REPO}"
