@@ -6,7 +6,6 @@ import ru.rozum.gitTest.data.mapper.AppMapper
 import ru.rozum.gitTest.data.network.api.*
 import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
-import ru.rozum.gitTest.exception.InvalidTokenException
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
@@ -43,37 +42,43 @@ class AppRepositoryImpl @Inject constructor(
 //        throw ConnectionException("${response.code()}\ninformation for developers")
 //    }
 
+    override suspend fun getToken(): String = client.getToken()
+
     override suspend fun getRepositories(): List<Repo> = connect(
         response = apiGitHubService.getRepositories(client.getToken()),
         errorMessageException = "Something error",
     ) { answer -> answer.map { mapper.mapRepoDtoToEntity(it) } }
 
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
-        response = apiGitHubService.getRepository(client.getToken(), repoId),
-        errorMessageException = "Connection error",
+        response = apiGitHubService.getRepository(client.getToken(), repoId)
     ) { mapper.mapRepoDetailsToEntity(it) }
 
-    override suspend fun signIn(token: String): UserInfo = connect(
-        response = apiGitHubService.getUserInfo(token),
-        errorMessageException = "information for developers",
-        isAddingCodeErrorInMessage = true,
-        additionalException = {
-            val regex = Regex("^\\w+$")
-            if (!token.matches(regex)) throw InvalidTokenException("Invalid token")
-        }) { mapper.mapUserInfoDtoToEntity(it) }
-
+    override suspend fun signIn(token: String): UserInfo {
+        val legalToken = "bearer $token"
+        return connect(
+            response = apiGitHubService.getUserInfo(legalToken),
+            errorMessageException = "information for developers",
+            isAddingCodeErrorInMessage = true,
+            additionalException = {
+                val regex = Regex("^bearer \\w+$")
+                if (!legalToken.matches(regex)) throw IllegalArgumentException("Invalid token")
+            }) {
+            client.saveToken(KeyValueStorage(token))
+            mapper.mapUserInfoDtoToEntity(it)
+        }
+    }
 
     override suspend fun getRepositoryReadme(
         ownerName: String,
         repositoryName: String,
         branchName: String
     ): String = connect(
-        response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
-        errorMessageException = "Connection error") { it }
+        response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName)
+    ) { it }
 
     private inline fun <T, V> connect(
         response: Response<T>,
-        errorMessageException: String,
+        errorMessageException: String = "Connection error",
         isAddingCodeErrorInMessage: Boolean = false,
         additionalException: (() -> Unit) = {},
         result: ((T) -> V)
@@ -83,7 +88,8 @@ class AppRepositoryImpl @Inject constructor(
             val body = response.body()
             if (body != null) return result.invoke(body)
         }
-        if (isAddingCodeErrorInMessage) throw RuntimeException(errorMessageException)
-        else throw RuntimeException("${response.code()}\n$errorMessageException")
+        if (isAddingCodeErrorInMessage) throw RuntimeException(
+            "Code: ${response.code()}\n$errorMessageException"
+        ) else throw RuntimeException(errorMessageException)
     }
 }

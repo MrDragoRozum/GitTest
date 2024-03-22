@@ -12,4 +12,5 @@ interface AppRepository {
     ): String
 
     suspend fun signIn(token: String): UserInfo
+    suspend fun getToken(): String
 }

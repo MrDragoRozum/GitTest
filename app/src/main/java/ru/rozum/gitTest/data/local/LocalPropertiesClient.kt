@@ -15,9 +15,12 @@ class LocalPropertiesClient @Inject constructor(private val sharedPreferences: S
     }
 
     suspend fun getToken(): String = withContext(Dispatchers.IO) {
-        sharedPreferences.getString(KEY_USER, null)
-            ?: throw NoTokenFoundException("Token not found")
+        sharedPreferences.getString(KEY_USER, null) ?: TOKEN_NO_FOUND_EMPTY
+    }
+
+    private companion object {
+        const val KEY_USER = "KEY_USER"
+        const val TOKEN_NO_FOUND_EMPTY = ""
     }
 }
 
-private const val KEY_USER = "KEY_USER"
