@@ -4,4 +4,15 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.hilt) apply false
+
+
+}
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
+    }
 }

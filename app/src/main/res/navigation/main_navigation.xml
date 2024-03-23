@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/authFragment">
+
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="ru.rozum.gitTest.presentation.fragment.AuthFragment"
+        android:label="fragment_auth"
+        tools:layout="@layout/fragment_auth">
+        <action
+            android:id="@+id/action_authFragment_to_repositoriesListFragment"
+            app:destination="@id/repositoriesListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/repositoriesListFragment"
+        android:name="ru.rozum.gitTest.presentation.fragment.RepositoriesListFragment"
+        android:label="fragment_repositories_list"
+        tools:layout="@layout/fragment_repositories_list">
+        <action
+            android:id="@+id/action_repositoriesListFragment_to_detailInfoFragment"
+            app:destination="@id/detailInfoFragment"
+            app:popUpTo="@id/repositoriesListFragment" />
+        <argument
+            android:name="userInfo"
+            app:argType="ru.rozum.gitTest.domain.entity.UserInfo" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailInfoFragment"
+        android:name="ru.rozum.gitTest.presentation.fragment.DetailInfoFragment"
+        android:label="fragment_detail_info"
+        tools:layout="@layout/fragment_detail_info" >
+        <argument
+            android:name="userInfo"
+            app:argType="ru.rozum.gitTest.domain.entity.UserInfo" />
+        <argument
+            android:name="Repo"
+            app:argType="ru.rozum.gitTest.domain.entity.Repo" />
+    </fragment>
+</navigation>

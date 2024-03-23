@@ -1,3 +1,7 @@
 package ru.rozum.gitTest.domain.entity
 
-data class UserInfo(val login: String)
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class UserInfo(val login: String) : Parcelable
