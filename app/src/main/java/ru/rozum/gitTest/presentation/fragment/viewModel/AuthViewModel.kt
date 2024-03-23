@@ -33,7 +33,7 @@ class AuthViewModel @Inject constructor(
     fun onSignButtonPressed(token: String) {
         sign(token)
     }
-
+    // TODO: Переписать как в RepositoryInfoViewModel
     private fun sign(token: String) {
         viewModelScope.launch {
             try {

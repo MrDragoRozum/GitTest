@@ -28,6 +28,7 @@ class RepositoriesListViewModel @Inject constructor(
     }
 
     // TODO: Дополнительную проверку сделать
+    // TODO: Переписать как в RepositoryInfoViewModel
     fun getRepositories() {
         viewModelScope.launch {
             kotlin.runCatching {
