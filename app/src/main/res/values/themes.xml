@@ -1,8 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.GitTest" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.GitTest" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
+        <item name="android:colorPrimaryDark">#151A21</item>
+        <item name="android:colorControlActivated">#57A6FF</item>
+        <item name="android:navigationBarColor">#151A21</item>
+
+        <item name="colorError">#AF001F</item>
     </style>
 
     <style name="Theme.GitTest" parent="Base.Theme.GitTest" />

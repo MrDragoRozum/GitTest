@@ -1,14 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".presentation.fragment.AuthFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/imageViewLogo"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
+            android:contentDescription="@string/icerock_logo_contentDescription"
+            app:srcCompat="@drawable/logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="@color/colorstate_for_text_input_layout"
+            app:cursorColor="#57A6FF"
+            app:hintTextColor="#57A6FF"
+            app:layout_constraintTop_toBottomOf="@id/imageViewLogo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputTextSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/token_hint" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#599356"
+            android:text="@string/sign"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBarSignIn"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:indeterminateTint="@color/white"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/buttonSignIn"
+            app:layout_constraintEnd_toEndOf="@id/buttonSignIn"
+            app:layout_constraintStart_toStartOf="@id/buttonSignIn"
+            app:layout_constraintTop_toTopOf="@id/buttonSignIn" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

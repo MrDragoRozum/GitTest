@@ -3,4 +3,7 @@
     <string name="token_gitHub">token</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="icerock_logo_contentDescription">Это ICEROCK? (логотип)</string>
+    <string name="token_hint">Personal access token</string>
+    <string name="sign">sign in</string>
 </resources>
