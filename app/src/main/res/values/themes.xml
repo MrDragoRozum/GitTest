@@ -2,13 +2,22 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.GitTest" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Customize your light theme here. -->
-<!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
-        <item name="android:colorPrimaryDark">#151A21</item>
+        <!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
+        <item name="android:colorPrimaryDark">@color/very_dark_blue</item>
         <item name="android:colorControlActivated">#57A6FF</item>
-        <item name="android:navigationBarColor">#151A21</item>
+        <item name="android:navigationBarColor">@color/very_dark_blue</item>
 
-        <item name="colorError">#AF001F</item>
+        <item name="colorError">@color/design_default_color_error</item>
+
+        <item name="materialButtonStyle">@style/defaultThemeButton</item>
     </style>
 
     <style name="Theme.GitTest" parent="Base.Theme.GitTest" />
+
+    <style name="defaultThemeButton" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">#599356</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

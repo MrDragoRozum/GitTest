@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imageViewConnectionError"
+        style="@style/default_style_imageView_include"
+        android:contentDescription="@string/connection_error_include"
+        app:srcCompat="@drawable/connection_error" />
+
+    <TextView
+        android:id="@+id/textViewErrorConnection"
+        style="@style/default_style_textView_error_include"
+        android:text="@string/connection_error_include" />
+
+    <TextView
+        android:id="@+id/textViewDetailsInfo"
+        style="@style/default_style_textView_details_info_include"
+        android:text="@string/check_internet_include" />
+</LinearLayout>

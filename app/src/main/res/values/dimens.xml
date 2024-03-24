@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_width_imageView_include">100dp</dimen>
+    <dimen name="default_height_imageView_include">100dp</dimen>
+    <dimen name="margin_bottom_imageView_include">24dp</dimen>
+
+    <dimen name="margin_bottom_textView_error_include">8dp</dimen>
+    <dimen name="textSize_textView_error_include">20sp</dimen>
+
+    <dimen name="textSize_textView_details_info_include">16sp</dimen>
+
+    <dimen name="margin_bottom_default_button">8dp</dimen>
+    <dimen name="margin_end_default_button">8dp</dimen>
+    <dimen name="margin_start_default_button">8dp</dimen>
+</resources>

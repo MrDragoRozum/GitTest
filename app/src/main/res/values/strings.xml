@@ -6,4 +6,13 @@
     <string name="icerock_logo_contentDescription">Это ICEROCK? (логотип)</string>
     <string name="token_hint">Personal access token</string>
     <string name="sign">sign in</string>
+    <string name="connection_error_include">Connection error</string>
+    <string name="check_internet_include">Check your Internet connection</string>
+    <string name="empty">Empty</string>
+    <string name="empty_info">No repositories at the moment</string>
+    <string name="retry">retry</string>
+    <string name="refresh">refresh</string>
+    <string name="something_error">Something error</string>
+    <string name="check_something_error">Check your something</string>
+    <string name="repositories_toolbar">Repositories</string>
 </resources>

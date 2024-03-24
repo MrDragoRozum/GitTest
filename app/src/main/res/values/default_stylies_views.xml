@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="default_style_imageView_include">
+        <item name="android:layout_width">@dimen/default_width_imageView_include</item>
+        <item name="android:layout_height">@dimen/default_height_imageView_include</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_imageView_include</item>
+    </style>
+
+    <style name="default_style_textView_error_include">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_textView_error_include</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/textSize_textView_error_include</item>
+        <item name="android:textColor">@color/error</item>
+    </style>
+
+    <style name="default_style_textView_details_info_include" parent="default_style_textView_error_include">
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:textSize">@dimen/textSize_textView_details_info_include</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="default_margins_for_default_buttons">
+        <item name="android:layout_marginStart">@dimen/margin_start_default_button</item>
+        <item name="android:layout_marginEnd">@dimen/margin_end_default_button</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_default_button</item>
+    </style>
+
+</resources>

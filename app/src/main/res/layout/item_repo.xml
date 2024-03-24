@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/textViewRepoName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#57A6FF"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/textViewRepoDescription"
+        app:layout_constraintEnd_toStartOf="@+id/textViewLanguage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Какой-то реп" />
+
+    <TextView
+        android:id="@+id/textViewRepoDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/textViewLanguage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewRepoName"
+        tools:text="Какое-то описание" />
+
+    <TextView
+        android:id="@+id/textViewLanguage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="kotlin"
+        tools:textColor="#A379EE" />
+</androidx.constraintlayout.widget.ConstraintLayout>
