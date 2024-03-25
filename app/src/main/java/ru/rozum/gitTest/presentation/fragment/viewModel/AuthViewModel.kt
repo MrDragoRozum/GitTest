@@ -42,8 +42,6 @@ class AuthViewModel @Inject constructor(
                 _state.emit(State.InvalidInput(token.message))
             } catch (exception: Exception) {
                 _actions.emit(Action.ShowError(exception.message))
-            } finally {
-                _state.emit(State.Idle)
             }
         }
     }
@@ -55,9 +53,8 @@ class AuthViewModel @Inject constructor(
     }
 
     sealed interface State {
-        data object Idle : State
         data object Loading : State
-        data class InvalidInput(val reason: String?) : State
+        data class InvalidInput(val reason: String? = null) : State
     }
 
     sealed interface Action {

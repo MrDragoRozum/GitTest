@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.data.repository
 
+import android.util.Log
 import retrofit2.Response
 import ru.rozum.gitTest.data.local.*
 import ru.rozum.gitTest.data.mapper.AppMapper
@@ -30,14 +31,15 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(token: String): UserInfo {
         val legalToken = "bearer $token"
+        Regex("^bearer ghp_[a-zA-Z0-9]{36}+\$").also {
+            if(!legalToken.matches(it)) throw IllegalArgumentException("Invalid token")
+        }
+
         return connect(
             response = apiGitHubService.getUserInfo(legalToken),
             errorMessageException = "information for developers",
-            levelErrorMessage = MESSAGE_CODE,
-            additionalException = {
-                val regex = Regex("^bearer \\w+$")
-                if (!legalToken.matches(regex)) throw IllegalArgumentException("Invalid token")
-            }) {
+            levelErrorMessage = MESSAGE_CODE
+        ) {
             client.saveToken(KeyValueStorage(token))
             mapper.mapUserInfoDtoToEntity(it)
         }
@@ -48,18 +50,16 @@ class AppRepositoryImpl @Inject constructor(
         repositoryName: String,
         branchName: String
     ): String = connect(
-        levelErrorMessage = CODE,
-        response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName)
+        response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
+        levelErrorMessage = CODE
     ) { it }
 
     private inline fun <T, V> connect(
         response: Response<T>,
         errorMessageException: String = "Connection error",
         levelErrorMessage: LevelException = MESSAGE,
-        additionalException: (() -> Unit) = {},
-        result: ((T) -> V)
+        result: (T) -> V
     ): V {
-        additionalException.invoke()
         if (response.isSuccessful) {
             val body = response.body()
             if (body != null) return result.invoke(body)
