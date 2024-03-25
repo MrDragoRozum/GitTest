@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
-    // Retrofit + kotlin-serialization
+    // Retrofit + kotlin-serialization + okHttp
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
@@ -68,8 +68,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
-    // okHttp
-
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
