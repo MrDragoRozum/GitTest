@@ -15,4 +15,11 @@
     <string name="something_error">Something error</string>
     <string name="check_something_error">Check your something</string>
     <string name="repositories_toolbar">Repositories</string>
+    <string name="license">License</string>
+
+    <string name="stars"><font color='#FAD875'>%d</font> stars</string>
+    <string name="forks"><font color='#6ED370'>%d</font> forks</string>
+    <string name="watchers"><font color='#9CFFF9'>%d</font> watchers</string>
+    <string name="no_readme"><font color='#B5B7B8'>No README.md</font></string>
+
 </resources>

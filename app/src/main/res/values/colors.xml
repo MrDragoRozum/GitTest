@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="error">#CB4F4F</color>
     <color name="very_dark_blue">#161B22</color>
+    <color name="blue">#57A6FF</color>
 </resources>

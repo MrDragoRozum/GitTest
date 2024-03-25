@@ -5,6 +5,7 @@ data class RepoDetails(
     val name: String,
     val htmlUser: String,
     val license: String,
+    // TODO: Поменять название
     val starts: Int,
     val forks: Int,
     val watchers: Int,

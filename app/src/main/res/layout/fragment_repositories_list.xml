@@ -65,7 +65,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressBarRepoDetails"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:indeterminateTint="@color/white"
