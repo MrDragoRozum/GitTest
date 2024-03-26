@@ -1,7 +1,17 @@
 package ru.rozum.gitTest.data.repository
 
-import android.util.Log
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.decodeFromStream
 import retrofit2.Response
+import ru.rozum.gitTest.R
+import ru.rozum.gitTest.data.external.ColorJson
 import ru.rozum.gitTest.data.local.*
 import ru.rozum.gitTest.data.mapper.AppMapper
 import ru.rozum.gitTest.data.network.api.*
@@ -15,15 +25,29 @@ class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,
     private val mapper: AppMapper,
-    private val client: LocalPropertiesClient
+    private val client: LocalPropertiesClient,
+    // TODO вынести Dispatchers сюда
+    @ApplicationContext val context: Context
 ) : AppRepository {
 
     override suspend fun getToken(): String = client.getToken()
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getRepositories(): List<Repo> = connect(
         response = apiGitHubService.getRepositories(client.getTokenForGitHub()),
         errorMessageException = "Something error",
-    ) { answer -> answer.map { mapper.mapRepoDtoToEntity(it) } }
+    ) { list ->
+        list.map { repoDto ->
+            withContext(Dispatchers.IO) {
+                context.resources.openRawResource(R.raw.colors).use { inputStream ->
+                    Json.decodeFromStream<JsonObject>(inputStream)[repoDto.language]?.let {
+                        repoDto.colorLanguageRGB = Json.decodeFromJsonElement<ColorJson>(it).color
+                    }
+                }
+                mapper.mapRepoDtoToEntity(repoDto)
+            }
+        }
+    }
 
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
         response = apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
@@ -32,7 +56,7 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun signIn(token: String): UserInfo {
         val legalToken = "bearer $token"
         Regex("^bearer ghp_[a-zA-Z0-9]{36}+\$").also {
-            if(!legalToken.matches(it)) throw IllegalArgumentException("Invalid token")
+            if (!legalToken.matches(it)) throw IllegalArgumentException("Invalid token")
         }
 
         return connect(

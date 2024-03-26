@@ -11,7 +11,8 @@ class AppMapper @Inject constructor() {
         id = dto.id,
         name = dto.name,
         description = dto.description ?: EMPTY_RESULT_DTO,
-        language = dto.language ?: EMPTY_RESULT_DTO
+        language = dto.language ?: EMPTY_RESULT_DTO,
+        colorLanguageRGB = dto.colorLanguageRGB
     )
 
     fun mapRepoDetailsToEntity(dto: RepoDetailsDto): RepoDetails = RepoDetails(
@@ -26,6 +27,8 @@ class AppMapper @Inject constructor() {
         language = dto.language ?: EMPTY_RESULT_DTO,
         branch = dto.branch
     )
-}
 
-private const val EMPTY_RESULT_DTO = ""
+    private companion object {
+        const val EMPTY_RESULT_DTO = ""
+    }
+}

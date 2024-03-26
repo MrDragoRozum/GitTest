@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.presentation.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class RepositoryListAdapter @Inject constructor() :
                 } else {
                     textViewRepoDescription.text = repo.description
                 }
+                textViewLanguage.setTextColor(Color.parseColor(repo.colorLanguageRGB))
             }
             holder.itemView.setOnClickListener {
                 onClickRepo?.invoke(repo)
