@@ -5,8 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
-import retrofit2.http.Query
-import ru.rozum.gitTest.data.network.dto.*
+import ru.rozum.gitTest.data.network.dto.RepoDetailsDto
+import ru.rozum.gitTest.data.network.dto.RepoDto
+import ru.rozum.gitTest.data.network.dto.UserInfoDto
 
 interface ApiGitHubService {
 
@@ -35,7 +36,7 @@ private const val AUTH = "Authorization"
 private const val USER = "user"
 private const val REPOS = "$USER/repos"
 private const val SORTED_PUSHED = "sort=pushed"
-private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED&page=3"
+private const val REPOS_SORTED_PUSHED = "$REPOS?$SORTED_PUSHED&per_page=10"
 
 private const val ID_REPO = "id"
 private const val REPO = "repositories/{$ID_REPO}"

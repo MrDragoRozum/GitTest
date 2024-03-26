@@ -18,12 +18,14 @@
         android:id="@+id/recyclerViewRepos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:itemCount="5"
         tools:listitem="@layout/item_repo" />
 
     <include
+        android:id="@+id/connectionErrorRepoList"
         layout="@layout/connection_error_include"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -32,6 +34,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <include
+        android:id="@+id/emptyRepoList"
         layout="@layout/empty_include"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -40,6 +43,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <include
+        android:id="@+id/somethingErrorRepoList"
         layout="@layout/something_error_include"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Repo(
+    val id: Long,
     val name: String,
     val description: String,
     val language: String,

@@ -32,6 +32,7 @@ class RepositoriesListViewModel @Inject constructor(
     fun getRepositories() {
         viewModelScope.launch {
             kotlin.runCatching {
+                _state.value = State.Loading
                 getRepositoriesUseCase.invoke().also {
                     if (it.isNotEmpty()) {
                         _state.value = State.Loaded(it)

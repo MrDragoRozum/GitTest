@@ -8,6 +8,7 @@ class AppMapper @Inject constructor() {
 
     fun mapUserInfoDtoToEntity(dto: UserInfoDto): UserInfo = UserInfo(login = dto.login)
     fun mapRepoDtoToEntity(dto: RepoDto): Repo = Repo(
+        id = dto.id,
         name = dto.name,
         description = dto.description ?: EMPTY_RESULT_DTO,
         language = dto.language ?: EMPTY_RESULT_DTO

@@ -1,60 +1,116 @@
 package ru.rozum.gitTest.presentation.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import ru.rozum.gitTest.R
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
+import ru.rozum.gitTest.databinding.FragmentRepositoriesListBinding
+import ru.rozum.gitTest.presentation.adapter.RepositoryListAdapter
+import ru.rozum.gitTest.presentation.fragment.util.collectSmall
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel.State
+import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RepositoriesListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class RepositoriesListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentRepositoriesListBinding? = null
+    private val binding get() = _binding!!
+
+    @Inject
+    lateinit var adapter: RepositoryListAdapter
+
+    private val viewModel by viewModels<RepositoriesListViewModel>()
+
+    private val args by navArgs<RepositoriesListFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_repositories_list, container, false)
+    ): View {
+        _binding = FragmentRepositoriesListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RepositoriesListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RepositoriesListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        installAdapter()
+        state()
+        listeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun listeners() {
+        with(binding) {
+            listOf(buttonRetry, buttonRefresh).forEach {
+                it.setOnClickListener {
+                    viewModel.getRepositories()
                 }
             }
+        }
+        adapter.onClickRepo = { repo ->
+            findNavController().navigate(
+                RepositoriesListFragmentDirections
+                    .actionRepositoriesListFragmentToDetailInfoFragment(args.userInfo, repo)
+            )
+        }
+    }
+
+    private fun installAdapter() {
+        binding.recyclerViewRepos.adapter = adapter
+        binding.recyclerViewRepos.addItemDecoration(
+            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+        )
+    }
+
+    private fun state() {
+        collectSmall(viewLifecycleOwner, viewModel.state) {
+            installState(it)
+        }
+    }
+
+    private fun installState(state: State) {
+        binding.progressBarRepoDetails.visibility =
+            if (state is State.Loading) View.VISIBLE else View.GONE
+
+        // TODO: Вынести кнопки в Include
+        if (state is State.Empty) {
+            binding.emptyRepoList.root.visibility = View.VISIBLE
+            binding.buttonRefresh.visibility = View.VISIBLE
+        } else {
+            binding.emptyRepoList.root.visibility = View.GONE
+            binding.buttonRefresh.visibility = View.GONE
+        }
+
+        if (state is State.Loaded) {
+            adapter.submitList(state.repos)
+        }
+
+        if (state is State.SomethingError) {
+            binding.somethingErrorRepoList.root.visibility = View.VISIBLE
+            binding.buttonRetry.visibility = View.VISIBLE
+        } else {
+            binding.somethingErrorRepoList.root.visibility = View.GONE
+            binding.buttonRetry.visibility = View.GONE
+        }
+
+        if (state is State.ConnectionError) {
+            binding.connectionErrorRepoList.root.visibility = View.VISIBLE
+            binding.buttonRefresh.visibility = View.VISIBLE
+        } else {
+            binding.connectionErrorRepoList.root.visibility = View.GONE
+            binding.buttonRefresh.visibility = View.GONE
+        }
     }
 }
