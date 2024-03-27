@@ -5,4 +5,7 @@
     <color name="error">#CB4F4F</color>
     <color name="very_dark_blue">#161B22</color>
     <color name="blue">#57A6FF</color>
+    <color name="yellow_stars">#FAD875</color>
+    <color name="green_forks">#6ED370</color>
+    <color name="blue_watchers">#99FBF6</color>
 </resources>

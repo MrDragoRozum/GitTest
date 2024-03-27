@@ -1,60 +1,127 @@
 package ru.rozum.gitTest.presentation.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import io.noties.markwon.Markwon
+import io.noties.markwon.ext.tables.TablePlugin
+import io.noties.markwon.ext.tasklist.TaskListPlugin
+import io.noties.markwon.image.ImagesPlugin
+import io.noties.markwon.linkify.LinkifyPlugin
+import io.noties.markwon.syntax.Prism4jThemeDarkula
+import io.noties.markwon.syntax.SyntaxHighlightPlugin
+import io.noties.prism4j.Prism4j
 import ru.rozum.gitTest.R
+import ru.rozum.gitTest.databinding.FragmentDetailInfoBinding
+import ru.rozum.gitTest.presentation.fragment.markDown.*
+import ru.rozum.gitTest.presentation.fragment.util.collectSmall
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DetailInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class DetailInfoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentDetailInfoBinding? = null
+    private val binding get() = _binding!!
+
+    private val viewModel by viewModels<RepositoryInfoViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail_info, container, false)
+    ): View {
+        _binding = FragmentDetailInfoBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DetailInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        state()
+        listeners()
+    }
+
+    private fun listeners() {
+        binding.toolbarRepoDetails.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.buttonRetryDetailsRepo.setOnClickListener {
+            viewModel.retry()
+        }
+    }
+
+    private fun state() {
+        collectSmall(viewLifecycleOwner, viewModel.state) {
+            installState(it)
+        }
+    }
+
+    private fun installState(state: State) {
+        binding.progressBarRepoDetails.visibility =
+            if (state is State.Loading) View.VISIBLE else View.GONE
+
+        if (state is State.Error) {
+            binding.connectionErrorRepoDetails.root.visibility = View.VISIBLE
+            binding.buttonRetryDetailsRepo.visibility = View.VISIBLE
+        } else {
+            binding.connectionErrorRepoDetails.root.visibility = View.GONE
+            binding.buttonRetryDetailsRepo.visibility = View.GONE
+        }
+
+
+        if (state is State.Loaded) {
+            binding.toolbarRepoDetails.title = state.githubRepo.name
+            binding.detailsInfoRepoView.repoDetails = state.githubRepo
+            binding.detailsInfoRepoView.visibility = View.VISIBLE
+            binding.textViewReadme.visibility = View.VISIBLE
+        }
+
+        if (state is State.Loaded) {
+            installReadmeState(state.readmeState)
+        }
+    }
+
+    private fun installReadmeState(
+        state: ReadmeState,
+    ) {
+        if (state is ReadmeState.Loaded) {
+            // TODO: Вынести в DI
+            val prism4j = Prism4j(GrammarLocatorDef())
+            val prism4jTheme = Prism4jThemeDarkula.create()
+
+            Markwon.builder(requireContext())
+                .usePlugin(TaskListPlugin.create(requireContext()))
+                .usePlugin(LinkifyPlugin.create())
+                .usePlugin(TablePlugin.create(requireContext()))
+                .usePlugin(ImagesPlugin.create())
+                .usePlugin(SyntaxHighlightPlugin.create(prism4j, prism4jTheme))
+                .build()
+                .setMarkdown(binding.textViewReadme, state.markdown)
+
+        } else if (state is ReadmeState.Empty) {
+            binding.textViewReadme.text = getString(R.string.no_readme)
+        }
+
+        binding.progressBarReadme.visibility =
+            if (state is ReadmeState.Loading) View.VISIBLE else View.GONE
+
+        // TODO: Вынести кнопку в макет include
+        if (state is ReadmeState.Error) {
+            binding.connectionErrorRepoDetails.root.visibility = View.VISIBLE
+            binding.buttonRetryDetailsRepo.visibility = View.VISIBLE
+        } else {
+            binding.connectionErrorRepoDetails.root.visibility = View.GONE
+            binding.buttonRetryDetailsRepo.visibility = View.GONE
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

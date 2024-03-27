@@ -14,5 +14,4 @@ data class RepoDetailsDto(
     @SerialName("watchers") val watchers: Int,
     @SerialName("description") val description: String?,
     @SerialName("language") val language: String?,
-    @SerialName("default_branch") val branch: String,
 )

@@ -34,7 +34,10 @@ object ApiFactoryModule {
     @ApiQualifier
     @Provides
     fun provideRetrofitApi(): Retrofit {
-        val json = Json { ignoreUnknownKeys = true }
+        val json = Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }
         return Retrofit.Builder()
             .addConverterFactory(json.asConverterFactory(CONTENT_TYPE.toMediaType()))
             .baseUrl(URL_API_GITHUB)

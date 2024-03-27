@@ -76,7 +76,21 @@ class AppRepositoryImpl @Inject constructor(
     ): String = connect(
         response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
         levelErrorMessage = CODE
-    ) { it }
+    ) { readme ->
+        // TODO: повысить читабельность в этом блоке
+        val builder = StringBuilder(readme)
+        Regex("(?<=[(])(\\w+)/(\\w+)[.](\\w{3,4})(?=[)])")
+            .findAll(builder)
+            .map { it.value }
+            .forEach {
+                builder.toString().replace(it, "https://raw.githubusercontent.com/$ownerName/$repositoryName/$branchName/$it"
+                ).also { result ->
+                    builder.setRange(0, result.length, result)
+                }
+            }
+        builder.toString()
+    }
+
 
     private inline fun <T, V> connect(
         response: Response<T>,

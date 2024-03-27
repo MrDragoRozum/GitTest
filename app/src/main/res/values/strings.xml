@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Git Test</string>
     <string name="token_gitHub">token</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="icerock_logo_contentDescription">Это ICEROCK? (логотип)</string>
     <string name="token_hint">Personal access token</string>
     <string name="sign">sign in</string>
@@ -18,10 +16,8 @@
     <string name="license">License</string>
     <string name="error">error</string>
     <string name="ok">OK</string>
-
-    <string name="stars"><font color='#FAD875'>%d</font> stars</string>
-    <string name="forks"><font color='#6ED370'>%d</font> forks</string>
-    <string name="watchers"><font color='#9CFFF9'>%d</font> watchers</string>
-    <string name="no_readme"><font color='#B5B7B8'>No README.md</font></string>
-
+    <string name="stars">stars</string>
+    <string name="forks">forks</string>
+    <string name="watchers">watchers</string>
+    <string name="no_readme">No README.md</string>
 </resources>

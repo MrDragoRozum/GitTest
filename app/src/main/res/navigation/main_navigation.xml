@@ -38,7 +38,7 @@
             android:name="userInfo"
             app:argType="ru.rozum.gitTest.domain.entity.UserInfo" />
         <argument
-            android:name="Repo"
+            android:name="repo"
             app:argType="ru.rozum.gitTest.domain.entity.Repo" />
     </fragment>
 </navigation>

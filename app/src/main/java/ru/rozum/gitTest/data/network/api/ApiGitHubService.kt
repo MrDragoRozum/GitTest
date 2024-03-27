@@ -5,9 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
-import ru.rozum.gitTest.data.network.dto.RepoDetailsDto
-import ru.rozum.gitTest.data.network.dto.RepoDto
-import ru.rozum.gitTest.data.network.dto.UserInfoDto
+import ru.rozum.gitTest.data.network.dto.*
 
 interface ApiGitHubService {
 

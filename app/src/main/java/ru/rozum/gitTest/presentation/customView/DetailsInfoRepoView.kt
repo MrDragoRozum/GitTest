@@ -1,9 +1,11 @@
 package ru.rozum.gitTest.presentation.customView
 
 import android.content.Context
+import android.text.Spanned
 import android.util.AttributeSet
 import android.util.TypedValue
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.HtmlCompat
 import androidx.core.view.setPadding
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.DetailsInfoRepoViewBinding
@@ -26,12 +28,38 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         with(binding) {
             textViewUriRepo.text = repo.htmlUser
             textViewLicenceOfRepo.text = repo.license
-            textViewForks.text = "${repo.forks}"
-            textViewStars.text = "${repo.starts}"
-            textViewWatchers.text = "${repo.watchers}"
+            textViewForks.text = installString(
+                repo.forks,
+                R.color.green_forks,
+                R.string.forks
+            )
+            textViewStars.text = installString(
+                repo.starts,
+                R.color.yellow_stars,
+                R.string.stars
+            )
+            textViewWatchers.text = installString(
+                repo.watchers,
+                R.color.blue_watchers,
+                R.string.watchers
+            )
         }
     }
 
+    private fun installString(count: Int, color: Int, string: Int): Spanned {
+        val colorRGB = context.getString(color).replaceFirst(
+            Regex(PATTERN_FIND_FIRST_TWO_F),
+            DELETE_THEM
+        )
+        val gotString = context.getString(string)
+        val formatted = String.format("<font color=%s>%d</font> %s", colorRGB, count, gotString)
+        return HtmlCompat.fromHtml(formatted, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    }
+
+    private companion object {
+        const val PATTERN_FIND_FIRST_TWO_F = "f{2}"
+        const val DELETE_THEM = ""
+    }
     private val binding: DetailsInfoRepoViewBinding
 
     init {
@@ -39,6 +67,7 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         binding = DetailsInfoRepoViewBinding.bind(this)
         setPadding(16f.toPX().toInt())
     }
+
     private fun Float.toPX() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         this,

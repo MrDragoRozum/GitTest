@@ -11,5 +11,4 @@ data class RepoDetails(
     val watchers: Int,
     val description: String,
     val language: String,
-    val branch: String,
 )

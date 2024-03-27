@@ -58,14 +58,17 @@
         android:layout_marginTop="16dp"
         android:drawablePadding="6dp"
         android:ellipsize="end"
+        android:lines="1"
         android:textSize="16sp"
-        app:drawableStartCompat="@drawable/stars"
+        app:drawableLeftCompat="@drawable/stars"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textViewForks"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewLicense"
-        tools:text="100 stars" />
+        app:layout_constraintWidth_max="130dp"
+        tools:text="168000 stars" />
 
     <TextView
         android:id="@+id/textViewForks"
@@ -73,12 +76,15 @@
         android:layout_height="wrap_content"
         android:drawablePadding="6dp"
         android:ellipsize="end"
+        android:lines="1"
         android:textSize="16sp"
         app:drawableStartCompat="@drawable/forks"
-        app:layout_constraintBottom_toBottomOf="@id/textViewStars"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textViewWatchers"
         app:layout_constraintStart_toEndOf="@id/textViewStars"
-        tools:text="30 forks" />
+        app:layout_constraintWidth_max="130dp"
+        tools:text="51400 forks" />
 
     <TextView
         android:id="@+id/textViewWatchers"
@@ -86,10 +92,13 @@
         android:layout_height="wrap_content"
         android:drawablePadding="6dp"
         android:ellipsize="end"
+        android:lines="1"
         android:textSize="16sp"
         app:drawableStartCompat="@drawable/watchers"
-        app:layout_constraintBottom_toBottomOf="@id/textViewStars"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/textViewForks"
-        tools:text="25 watchers" />
+        app:layout_constraintWidth_max="130dp"
+        tools:text="8200 watchers" />
 </merge>

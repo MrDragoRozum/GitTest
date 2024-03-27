@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.presentation.fragment.viewModel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,46 +11,73 @@ import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.RepoDetails
 import ru.rozum.gitTest.domain.usecase.GetRepositoryReadmeUseCase
 import ru.rozum.gitTest.domain.usecase.GetRepositoryUseCase
+import ru.rozum.gitTest.presentation.fragment.DetailInfoFragmentArgs
 import javax.inject.Inject
 
 @HiltViewModel
 class RepositoryInfoViewModel @Inject constructor(
     private val getRepositoryReadmeUseCase: GetRepositoryReadmeUseCase,
-    private val getRepositoryUseCase: GetRepositoryUseCase
+    private val getRepositoryUseCase: GetRepositoryUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val args = DetailInfoFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val exceptionReadme: CoroutineExceptionHandler
+    private val exceptionRepo: CoroutineExceptionHandler
+
+    init {
+        exceptionReadme = CoroutineExceptionHandler { _, throwable ->
+                when (throwable.message) {
+                    "404" -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
+                    else -> _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
+            }
+        }
+        exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
+
+        setDataInGetRepository()
+    }
 
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asStateFlow()
 
-    private val stateReadme = MutableStateFlow<ReadmeState>(ReadmeState.Loading)
+    private var _repoLoaded: RepoDetails? = null
+    private val repoLoaded get() = _repoLoaded
+        ?: throw IllegalArgumentException("repoLoaded does not be null!")
 
-    private val exceptionReadme = CoroutineExceptionHandler { _, throwable ->
-        when (throwable.message) {
-            "404" -> stateReadme.value = ReadmeState.Empty
-            else -> stateReadme.value = ReadmeState.Error
+    fun retry() {
+        setDataInGetRepository()
+    }
+
+    private fun setDataInGetRepository() {
+        with(args) {
+            getRepository(repo.id, userInfo.login, repo.name, repo.branch)
         }
     }
 
-    private val exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
-
-    fun getRepository(
+    private fun getRepository(
         repoId: String,
         ownerName: String,
         repositoryName: String,
         branchName: String
     ) {
         viewModelScope.launch {
-            val jobReadme = viewModelScope.launch(exceptionReadme) {
-                getRepositoryReadmeUseCase.invoke(ownerName, repositoryName, branchName).also {
-                    stateReadme.value = ReadmeState.Loaded(it)
-                }
-            }
-
             viewModelScope.launch(exceptionRepo) {
                 getRepositoryUseCase.invoke(repoId).also {
-                    jobReadme.join()
-                    _state.value = State.Loaded(it, stateReadme.value)
+                    _state.value = State.Loaded(ReadmeState.Loading, it)
+                    _repoLoaded = it
+                    getReadme(ownerName, repositoryName, branchName)
                 }
+            }
+        }
+    }
+
+    private fun getReadme(ownerName: String, repositoryName: String, branchName: String) {
+        viewModelScope.launch(exceptionReadme) {
+            getRepositoryReadmeUseCase.invoke(ownerName, repositoryName, branchName).also {
+                _state.value = State.Loaded(
+                    ReadmeState.Loaded(it),
+                    repoLoaded
+                )
             }
         }
     }
@@ -58,13 +86,13 @@ class RepositoryInfoViewModel @Inject constructor(
         data object Loading : State
         data object Error : State
         data class Loaded(
-            val githubRepo: RepoDetails,
-            val readmeState: ReadmeState
+            val readmeState: ReadmeState,
+            val githubRepo: RepoDetails
         ) : State
     }
 
     sealed interface ReadmeState {
-        data object Loading : ReadmeState
+        data object Loading : ReadmeState, State
         data object Empty : ReadmeState
         data object Error : ReadmeState
         data class Loaded(val markdown: String) : ReadmeState

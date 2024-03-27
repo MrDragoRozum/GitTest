@@ -43,10 +43,20 @@ kapt {
     correctErrorTypes = true
 }
 
+configurations.all {
+    exclude("org.jetbrains", "annotations-java5")
+}
+
 dependencies {
 
     // MarkWon
     implementation(libs.core)
+    implementation("io.noties.markwon:ext-tasklist:4.6.2")
+    implementation("io.noties.markwon:linkify:4.6.2")
+    implementation("io.noties.markwon:ext-tables:4.6.2")
+    implementation("io.noties.markwon:image:4.6.2")
+    implementation("io.noties.markwon:syntax-highlight:4.6.2")
+    kapt("io.noties:prism4j-bundler:2.0.0")
 
     // Jetpack Hilt
     implementation(libs.hilt.android)

@@ -12,7 +12,8 @@ class AppMapper @Inject constructor() {
         name = dto.name,
         description = dto.description ?: EMPTY_RESULT_DTO,
         language = dto.language ?: EMPTY_RESULT_DTO,
-        colorLanguageRGB = dto.colorLanguageRGB
+        colorLanguageRGB = dto.colorLanguageRGB,
+        branch = dto.branch
     )
 
     fun mapRepoDetailsToEntity(dto: RepoDetailsDto): RepoDetails = RepoDetails(
@@ -25,7 +26,6 @@ class AppMapper @Inject constructor() {
         watchers = dto.watchers,
         description = dto.description ?: EMPTY_RESULT_DTO,
         language = dto.language ?: EMPTY_RESULT_DTO,
-        branch = dto.branch
     )
 
     private companion object {
