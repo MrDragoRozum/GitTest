@@ -10,21 +10,25 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.rozum.gitTest.data.network.api.*
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 object ApiFactoryModule {
 
     @Provides
+    @Singleton
     fun provideApiService(@ApiQualifier retrofit: Retrofit): ApiGitHubService =
         retrofit.create(ApiGitHubService::class.java)
 
     @Provides
+    @Singleton
     fun provideRawService(@RawQualifier retrofit: Retrofit): RawGitHubService =
         retrofit.create(RawGitHubService::class.java)
 
     @RawQualifier
     @Provides
+    @Singleton
     fun provideRetrofitRaw(): Retrofit =
         Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
@@ -33,6 +37,7 @@ object ApiFactoryModule {
 
     @ApiQualifier
     @Provides
+    @Singleton
     fun provideRetrofitApi(): Retrofit {
         val json = Json {
             isLenient = true

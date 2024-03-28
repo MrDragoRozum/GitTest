@@ -6,18 +6,19 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.rozum.gitTest.R
-import ru.rozum.gitTest.data.repository.*
-import ru.rozum.gitTest.domain.repository.*
+import ru.rozum.gitTest.data.repository.AppRepositoryImpl
+import ru.rozum.gitTest.domain.repository.AppRepository
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 interface DataModule {
 
     @Binds
+    @Singleton
     fun bindAppRepository(impl: AppRepositoryImpl): AppRepository
 
     companion object {
