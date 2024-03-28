@@ -75,10 +75,16 @@ class AuthFragment : Fragment() {
         with(binding) {
             progressBarSignIn.visibility = if (state is State.Loading) View.VISIBLE else View.GONE
             if (state is State.InvalidInput) {
-                buttonSignIn.text = getString(R.string.sign)
+                buttonSignIn.apply {
+                    text = getString(R.string.sign)
+                    isClickable = true
+                }
                 textInputLayoutSignIn.error = state.reason
             } else {
-                buttonSignIn.text = EMPTY_TEXT
+                buttonSignIn.apply {
+                    text = EMPTY_TEXT
+                    isClickable = false
+                }
                 textInputLayoutSignIn.error = null
             }
         }
@@ -102,7 +108,10 @@ class AuthFragment : Fragment() {
                 ErrorDialogFragment.newInstance(action.message)
                     .show(requireActivity().supportFragmentManager, null)
                 binding.progressBarSignIn.visibility = View.GONE
-                binding.buttonSignIn.text = getString(R.string.sign)
+                binding.buttonSignIn.apply {
+                    text = getString(R.string.sign)
+                    isClickable = true
+                }
             }
         }
     }
