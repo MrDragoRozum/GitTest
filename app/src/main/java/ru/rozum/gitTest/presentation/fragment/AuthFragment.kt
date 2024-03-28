@@ -7,17 +7,12 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentAuthBinding
 import ru.rozum.gitTest.presentation.fragment.dialog.ErrorDialogFragment
+import ru.rozum.gitTest.presentation.fragment.util.collectSmall
 import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel
 import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel.*
 
@@ -66,32 +61,29 @@ class AuthFragment : Fragment() {
     }
 
     private fun state() {
-        collectSmall(viewModel.state) {
+        collectSmall(viewLifecycleOwner, viewModel.state) {
             installState(it)
         }
     }
 
     private fun installState(state: State) {
-        with(binding) {
-            progressBarSignIn.visibility = if (state is State.Loading) View.VISIBLE else View.GONE
-            if (state is State.InvalidInput) {
-                buttonSignIn.apply {
-                    text = getString(R.string.sign)
-                    isClickable = true
-                }
-                textInputLayoutSignIn.error = state.reason
-            } else {
-                buttonSignIn.apply {
-                    text = EMPTY_TEXT
-                    isClickable = false
-                }
-                textInputLayoutSignIn.error = null
+        binding.progressBarSignIn.visibility =
+            if (state is State.Loading) View.VISIBLE else View.GONE
+
+        if (state is State.InvalidInput) {
+            returnBeginningStateButtonSignIn()
+            binding.textInputLayoutSignIn.error = state.reason
+        } else {
+            binding.buttonSignIn.apply {
+                text = EMPTY_TEXT
+                isClickable = false
             }
+            binding.textInputLayoutSignIn.error = null
         }
     }
 
     private fun action() {
-        collectSmall(viewModel.actions) {
+        collectSmall(viewLifecycleOwner, viewModel.actions) {
             installAction(it)
         }
     }
@@ -108,27 +100,21 @@ class AuthFragment : Fragment() {
                 ErrorDialogFragment.newInstance(action.message)
                     .show(requireActivity().supportFragmentManager, null)
                 binding.progressBarSignIn.visibility = View.GONE
-                binding.buttonSignIn.apply {
-                    text = getString(R.string.sign)
-                    isClickable = true
-                }
+                returnBeginningStateButtonSignIn()
             }
         }
     }
 
     private fun token() {
-        collectSmall(viewModel.token) {
+        collectSmall(viewLifecycleOwner, viewModel.token) {
             binding.textInputTextSignIn.setText(it)
         }
     }
 
-    private inline fun <T> collectSmall(consumer: Flow<T>, crossinline function: (T) -> Unit) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                consumer.collectLatest {
-                    function(it)
-                }
-            }
+    private fun returnBeginningStateButtonSignIn() {
+        binding.buttonSignIn.apply {
+            text = getString(R.string.sign)
+            isClickable = true
         }
     }
 

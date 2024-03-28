@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ru.rozum.gitTest.presentation.customView.DetailsInfoRepoView
+            <ru.rozum.gitTest.presentation.fragment.customView.DetailsInfoRepoView
                 android:id="@+id/detailsInfoRepoView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
