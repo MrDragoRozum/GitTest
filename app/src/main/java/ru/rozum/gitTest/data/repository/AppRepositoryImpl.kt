@@ -28,7 +28,7 @@ class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,
     private val mapper: AppMapper,
-    private val client: LocalPropertiesClient,
+    private val client: KeyValueStorage,
     private val dispatcherIO: CoroutineDispatcher,
     @RegexLegalTokenQualifier private val regexLegalToken: Regex,
     @RegexParsingImagesFromFolderQualifier private val regexParsingImagesFromFolder: Regex,
@@ -74,7 +74,7 @@ class AppRepositoryImpl @Inject constructor(
             errorMessageException = context.getString(R.string.info_for_dev),
             levelErrorMessage = MESSAGE_CODE
         ) {
-            client.saveToken(KeyValueStorage(token))
+            client.saveToken(token)
             mapper.mapUserInfoDtoToEntity(it)
         }
     }
