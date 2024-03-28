@@ -1,4 +1,4 @@
-package ru.rozum.gitTest.presentation.adapter
+package ru.rozum.gitTest.presentation.fragment.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater

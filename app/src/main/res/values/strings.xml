@@ -14,7 +14,7 @@
     <string name="check_something_error">Check your something</string>
     <string name="repositories_toolbar">Repositories</string>
     <string name="license">License</string>
-    <string name="error">error</string>
+    <string name="error">Error</string>
     <string name="ok">OK</string>
     <string name="stars">stars</string>
     <string name="forks">forks</string>

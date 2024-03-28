@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.rozum.gitTest.databinding.FragmentRepositoriesListBinding
-import ru.rozum.gitTest.presentation.adapter.RepositoryListAdapter
+import ru.rozum.gitTest.presentation.fragment.adapter.RepositoryListAdapter
 import ru.rozum.gitTest.presentation.fragment.util.collectSmall
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel.State

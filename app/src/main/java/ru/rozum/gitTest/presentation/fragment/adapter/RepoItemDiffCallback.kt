@@ -1,4 +1,4 @@
-package ru.rozum.gitTest.presentation.adapter
+package ru.rozum.gitTest.presentation.fragment.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.rozum.gitTest.domain.entity.Repo

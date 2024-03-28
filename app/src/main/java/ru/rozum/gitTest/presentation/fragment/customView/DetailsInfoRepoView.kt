@@ -1,4 +1,4 @@
-package ru.rozum.gitTest.presentation.customView
+package ru.rozum.gitTest.presentation.fragment.customView
 
 import android.content.Context
 import android.text.Spanned

@@ -18,9 +18,7 @@ class ErrorDialogFragment : DialogFragment() {
         AlertDialog.Builder(it).apply {
             setTitle(getString(R.string.error))
             setMessage(error)
-            setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.cancel()
-            }
+            setPositiveButton(getString(R.string.ok)) { dialog, _ -> dialog.cancel() }
         }.create()
     }
 
