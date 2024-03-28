@@ -9,13 +9,13 @@
     <ImageView
         android:id="@+id/imageViewConnectionError"
         style="@style/default_style_imageView_include"
-        android:contentDescription="@string/connection_error_include"
+        android:contentDescription="@string/connection_error"
         app:srcCompat="@drawable/connection_error" />
 
     <TextView
         android:id="@+id/textViewErrorConnection"
         style="@style/default_style_textView_error_include"
-        android:text="@string/connection_error_include" />
+        android:text="@string/connection_error" />
 
     <TextView
         android:id="@+id/textViewDetailsInfo"

@@ -2,7 +2,7 @@ package ru.rozum.gitTest.data.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -15,36 +15,45 @@ import ru.rozum.gitTest.data.external.ColorJson
 import ru.rozum.gitTest.data.local.*
 import ru.rozum.gitTest.data.mapper.AppMapper
 import ru.rozum.gitTest.data.network.api.*
+import ru.rozum.gitTest.data.network.dto.RepoDto
 import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
 import ru.rozum.gitTest.exception.ConcreteCodeException
 import javax.inject.Inject
 import ru.rozum.gitTest.data.repository.LevelException.*
+import ru.rozum.gitTest.di.RegexLegalTokenQualifier
+import ru.rozum.gitTest.di.RegexParsingImagesFromFolderQualifier
 
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,
     private val mapper: AppMapper,
     private val client: LocalPropertiesClient,
-    // TODO вынести Dispatchers сюда
+    private val dispatcherIO: CoroutineDispatcher,
+    @RegexLegalTokenQualifier private val regexLegalToken: Regex,
+    @RegexParsingImagesFromFolderQualifier private val regexParsingImagesFromFolder: Regex,
     @ApplicationContext val context: Context
 ) : AppRepository {
 
     override suspend fun getToken(): String = client.getToken()
 
-    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getRepositories(): List<Repo> = connect(
         response = apiGitHubService.getRepositories(client.getTokenForGitHub()),
-        errorMessageException = "Something error",
+        errorMessageException = context.getString(R.string.something_error),
     ) { list ->
-        list.map { repoDto ->
-            withContext(Dispatchers.IO) {
-                context.resources.openRawResource(R.raw.colors).use { inputStream ->
-                    Json.decodeFromStream<JsonObject>(inputStream)[repoDto.language]?.let {
-                        repoDto.colorLanguageRGB = Json.decodeFromJsonElement<ColorJson>(it).color
-                    }
-                }
-                mapper.mapRepoDtoToEntity(repoDto)
+        list.map {
+            withContext(dispatcherIO) {
+                setColorLanguageRGBInRepoDto(it)
+                mapper.mapRepoDtoToEntity(it)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun setColorLanguageRGBInRepoDto(repoDto: RepoDto) {
+        context.resources.openRawResource(R.raw.colors).use { inputStream ->
+            Json.decodeFromStream<JsonObject>(inputStream)[repoDto.language]?.let {
+                repoDto.colorLanguageRGB = Json.decodeFromJsonElement<ColorJson>(it).color
             }
         }
     }
@@ -55,13 +64,14 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(token: String): UserInfo {
         val legalToken = "bearer $token"
-        Regex("^bearer ghp_[a-zA-Z0-9]{36}+\$").also {
-            if (!legalToken.matches(it)) throw IllegalArgumentException("Invalid token")
+        regexLegalToken.also {
+            if (!legalToken.matches(it))
+                throw IllegalArgumentException(context.getString(R.string.invalid_token))
         }
 
         return connect(
             response = apiGitHubService.getUserInfo(legalToken),
-            errorMessageException = "information for developers",
+            errorMessageException = context.getString(R.string.info_for_dev),
             levelErrorMessage = MESSAGE_CODE
         ) {
             client.saveToken(KeyValueStorage(token))
@@ -77,31 +87,43 @@ class AppRepositoryImpl @Inject constructor(
         response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
         levelErrorMessage = CODE
     ) { readme ->
-        // TODO: повысить читабельность в этом блоке
         val builder = StringBuilder(readme)
-        Regex("(?<=!\\[alt text]\\(|\\[logo]:)(\\s)*(\\w+)/(\\w+)[.](\\w{2,3})(?=[)]?)")
+        regexParsingImagesFromFolder
             .findAll(builder)
             .map { it.value }
-            .forEach {
-                builder.toString().replace(it, "https://raw.githubusercontent.com/$ownerName/$repositoryName/$branchName/$it"
-                ).also { result ->
-                    builder.setRange(0, result.length, result)
-                }
+            .forEach { foundLinkImage ->
+                addURLForLinkImage(builder, foundLinkImage, ownerName, repositoryName, branchName)
             }
         builder.toString()
     }
 
+    private fun addURLForLinkImage(
+        builder: StringBuilder,
+        foundLinkImage: String,
+        ownerName: String,
+        repositoryName: String,
+        branchName: String
+    ) {
+        builder.toString().replace(
+            foundLinkImage,
+            URI_RAW_GITHUB_WITH_FORMATTERS.format(
+                ownerName,
+                repositoryName,
+                branchName,
+                foundLinkImage
+            )
+        ).also { result ->
+            builder.setRange(0, result.length, result)
+        }
+    }
 
     private inline fun <T, V> connect(
         response: Response<T>,
-        errorMessageException: String = "Connection error",
+        errorMessageException: String = context.getString(R.string.connection_error),
         levelErrorMessage: LevelException = MESSAGE,
         result: (T) -> V
     ): V {
-        if (response.isSuccessful) {
-            val body = response.body()
-            if (body != null) return result.invoke(body)
-        }
+        if (response.isSuccessful) return result.invoke(response.body()!!)
         when (levelErrorMessage) {
             MESSAGE -> throw RuntimeException(errorMessageException)
             CODE -> throw ConcreteCodeException("${response.code()}")
@@ -109,6 +131,10 @@ class AppRepositoryImpl @Inject constructor(
                 throw RuntimeException("Code: ${response.code()}\n$errorMessageException")
             }
         }
+    }
+
+    private companion object {
+        const val URI_RAW_GITHUB_WITH_FORMATTERS = "https://raw.githubusercontent.com/%s/%s/%s/%s"
     }
 }
 
