@@ -18,11 +18,11 @@ import ru.rozum.gitTest.data.network.api.*
 import ru.rozum.gitTest.data.network.dto.RepoDto
 import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
-import ru.rozum.gitTest.exception.ConcreteCodeException
 import javax.inject.Inject
 import ru.rozum.gitTest.data.repository.LevelException.*
 import ru.rozum.gitTest.di.RegexLegalTokenQualifier
 import ru.rozum.gitTest.di.RegexParsingImagesFromFolderQualifier
+import java.net.ConnectException
 
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
@@ -39,7 +39,7 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getRepositories(): List<Repo> = connect(
         response = apiGitHubService.getRepositories(client.getTokenForGitHub()),
-        errorMessageException = context.getString(R.string.something_error),
+        msgException = context.getString(R.string.something_error),
     ) { list ->
         list.map {
             withContext(dispatcherIO) {
@@ -71,8 +71,8 @@ class AppRepositoryImpl @Inject constructor(
 
         return connect(
             response = apiGitHubService.getUserInfo(legalToken),
-            errorMessageException = context.getString(R.string.info_for_dev),
-            levelErrorMessage = MESSAGE_CODE
+            msgException = context.getString(R.string.info_for_dev),
+            levelMessageException = MESSAGE_CODE
         ) {
             client.saveToken(token)
             mapper.mapUserInfoDtoToEntity(it)
@@ -85,7 +85,7 @@ class AppRepositoryImpl @Inject constructor(
         branchName: String
     ): String = connect(
         response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
-        levelErrorMessage = CODE
+        levelMessageException = CODE
     ) { readme ->
         val builder = StringBuilder(readme)
         regexParsingImagesFromFolder
@@ -119,17 +119,15 @@ class AppRepositoryImpl @Inject constructor(
 
     private inline fun <T, V> connect(
         response: Response<T>,
-        errorMessageException: String = context.getString(R.string.connection_error),
-        levelErrorMessage: LevelException = MESSAGE,
+        msgException: String = context.getString(R.string.connection_error),
+        levelMessageException: LevelException = MESSAGE,
         result: (T) -> V
     ): V {
         if (response.isSuccessful) return result.invoke(response.body()!!)
-        when (levelErrorMessage) {
-            MESSAGE -> throw RuntimeException(errorMessageException)
-            CODE -> throw ConcreteCodeException("${response.code()}")
-            MESSAGE_CODE -> {
-                throw RuntimeException("Code: ${response.code()}\n$errorMessageException")
-            }
+        when (levelMessageException) {
+            MESSAGE -> throw ConnectException(msgException)
+            CODE -> throw ConnectException("${response.code()}")
+            MESSAGE_CODE -> throw ConnectException("Code: ${response.code()}\n$msgException")
         }
     }
 
@@ -141,4 +139,3 @@ class AppRepositoryImpl @Inject constructor(
 private enum class LevelException {
     MESSAGE, MESSAGE_CODE, CODE
 }
-
