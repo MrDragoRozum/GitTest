@@ -79,7 +79,7 @@ class AppRepositoryImpl @Inject constructor(
     ) { readme ->
         // TODO: повысить читабельность в этом блоке
         val builder = StringBuilder(readme)
-        Regex("(?<=[(])(\\w+)/(\\w+)[.](\\w{3,4})(?=[)])")
+        Regex("(?<=!\\[alt text]\\(|\\[logo]:)(\\s)*(\\w+)/(\\w+)[.](\\w{2,3})(?=[)]?)")
             .findAll(builder)
             .map { it.value }
             .forEach {
