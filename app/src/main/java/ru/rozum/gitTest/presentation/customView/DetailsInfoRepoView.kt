@@ -34,7 +34,7 @@ class DetailsInfoRepoView @JvmOverloads constructor(
                 R.string.forks
             )
             textViewStars.text = installString(
-                repo.starts,
+                repo.stars,
                 R.color.yellow_stars,
                 R.string.stars
             )

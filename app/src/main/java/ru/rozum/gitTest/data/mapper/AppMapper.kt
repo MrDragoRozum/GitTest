@@ -21,7 +21,7 @@ class AppMapper @Inject constructor() {
         name = dto.name,
         htmlUser = dto.htmlUser,
         license = dto.license ?: EMPTY_RESULT_DTO,
-        starts = dto.stars,
+        stars = dto.stars,
         forks = dto.forks,
         watchers = dto.watchers,
         description = dto.description ?: EMPTY_RESULT_DTO,
