@@ -3,6 +3,7 @@ package ru.rozum.gitTest.presentation.fragment.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -26,6 +27,16 @@ class AuthViewModel @Inject constructor(
     private val _token = MutableSharedFlow<String>()
     val token = _token.asSharedFlow()
 
+    private val exception = CoroutineExceptionHandler { _, throwable ->
+        viewModelScope.launch {
+            when (throwable) {
+                is IllegalArgumentException -> _state.emit(State.InvalidInput(throwable.message))
+                is Exception -> _actions.emit(Action.ShowError(throwable.message))
+                else -> throw throwable
+            }
+        }
+    }
+
     init {
         viewModelScope.launch { _token.emit(getTokenUseCase.invoke()) }
     }
@@ -33,23 +44,16 @@ class AuthViewModel @Inject constructor(
     fun onSignButtonPressed(token: String) {
         sign(token)
     }
-    // TODO: Переписать как в RepositoryInfoViewModel
+
     private fun sign(token: String) {
-        viewModelScope.launch {
-            try {
-                beginToSign(token)
-            } catch (token: IllegalArgumentException) {
-                _state.emit(State.InvalidInput(token.message))
-            } catch (exception: Exception) {
-                _actions.emit(Action.ShowError(exception.message))
-            }
+        viewModelScope.launch(exception) {
+            beginToSign(token)
         }
     }
 
     private suspend fun beginToSign(token: String) {
         _state.emit(State.Loading)
-        val result = signInUseCase.invoke(token)
-        _actions.emit(Action.RouteToMain(result))
+        signInUseCase.invoke(token).also { _actions.emit(Action.RouteToMain(it)) }
     }
 
     sealed interface State {
