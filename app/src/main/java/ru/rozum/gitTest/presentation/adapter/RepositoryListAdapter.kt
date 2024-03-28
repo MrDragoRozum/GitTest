@@ -24,6 +24,7 @@ class RepositoryListAdapter @Inject constructor() :
     override fun onBindViewHolder(holder: RepoItemViewHolder, position: Int) {
         getItem(position).also { repo ->
             with(holder.binding) {
+                textViewLanguage.setTextColor(Color.parseColor(repo.colorLanguageRGB))
                 textViewLanguage.text = repo.language
                 textViewRepoName.text = repo.name
                 if (repo.description.isBlank()) {
@@ -31,7 +32,6 @@ class RepositoryListAdapter @Inject constructor() :
                 } else {
                     textViewRepoDescription.text = repo.description
                 }
-                textViewLanguage.setTextColor(Color.parseColor(repo.colorLanguageRGB))
             }
             holder.itemView.setOnClickListener {
                 onClickRepo?.invoke(repo)

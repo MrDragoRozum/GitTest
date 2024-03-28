@@ -18,6 +18,8 @@ class DetailsInfoRepoView @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyleAttr, defStyleRes) {
 
+    private val binding: DetailsInfoRepoViewBinding
+
     var repoDetails: RepoDetails? = null
         set(value) {
             value?.let { installInfoInViews(it) }
@@ -46,26 +48,20 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         }
     }
 
-    private fun installString(count: Int, color: Int, string: Int): Spanned {
-        val colorRGB = context.getString(color).replaceFirst(
-            Regex(PATTERN_FIND_FIRST_TWO_F),
-            DELETE_THEM
-        )
-        val gotString = context.getString(string)
-        val formatted = String.format("<font color=%s>%d</font> %s", colorRGB, count, gotString)
-        return HtmlCompat.fromHtml(formatted, HtmlCompat.FROM_HTML_MODE_LEGACY)
-    }
-
-    private companion object {
-        const val PATTERN_FIND_FIRST_TWO_F = "f{2}"
-        const val DELETE_THEM = ""
-    }
-    private val binding: DetailsInfoRepoViewBinding
-
     init {
         inflate(context, R.layout.details_info_repo_view, this)
         binding = DetailsInfoRepoViewBinding.bind(this)
         setPadding(16f.toPX().toInt())
+    }
+
+    private fun installString(count: Int, color: Int, string: Int): Spanned {
+        val colorRGB = context.getString(color).replaceFirst(
+            PATTERN_FIND_FIRST_TWO_F,
+            DELETE_THEM
+        )
+        val gotString = context.getString(string)
+        val formatted = COLORFUL_STATUS_FORMATTED.format(colorRGB, count, gotString)
+        return HtmlCompat.fromHtml(formatted, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun Float.toPX() = TypedValue.applyDimension(
@@ -73,4 +69,10 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         this,
         resources.displayMetrics
     )
+
+    private companion object {
+        const val PATTERN_FIND_FIRST_TWO_F = "ff"
+        const val DELETE_THEM = ""
+        const val COLORFUL_STATUS_FORMATTED = "<font color=%s>%d</font> %s"
+    }
 }
