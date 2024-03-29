@@ -2,8 +2,6 @@
 <resources>
 
     <style name="default_style_imageView_include">
-        <item name="android:layout_width">@dimen/default_width_imageView_include</item>
-        <item name="android:layout_height">@dimen/default_height_imageView_include</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginBottom">@dimen/margin_bottom_imageView_include</item>
     </style>

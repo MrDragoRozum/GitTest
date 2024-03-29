@@ -67,7 +67,7 @@
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewLicense"
-        app:layout_constraintWidth_max="130dp"
+        app:layout_constraintWidth_max="128dp"
         tools:text="168000 stars" />
 
     <TextView
@@ -83,7 +83,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textViewWatchers"
         app:layout_constraintStart_toEndOf="@id/textViewStars"
-        app:layout_constraintWidth_max="130dp"
+        app:layout_constraintWidth_max="128dp"
         tools:text="51400 forks" />
 
     <TextView
@@ -99,6 +99,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/textViewForks"
-        app:layout_constraintWidth_max="130dp"
+        app:layout_constraintWidth_max="128dp"
         tools:text="8200 watchers" />
 </merge>

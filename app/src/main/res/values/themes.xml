@@ -1,8 +1,5 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
     <style name="Base.Theme.GitTest" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!--        &lt;!&ndash; <item name="colorPrimary">@color/my_light_primary</item> &ndash;&gt;-->
         <item name="android:colorPrimaryDark">@color/very_dark_blue</item>
         <item name="android:colorControlActivated">#57A6FF</item>
         <item name="android:navigationBarColor">@color/very_dark_blue</item>

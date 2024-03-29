@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:overScrollMode="never"
+    android:scrollbars="none">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,6 +14,8 @@
         <ImageView
             android:id="@+id/imageViewSomethingError"
             style="@style/default_style_imageView_include"
+            android:layout_width="@dimen/default_width_imageView_include"
+            android:layout_height="@dimen/default_height_imageView_include"
             android:contentDescription="@string/something_error"
             app:layout_constraintBottom_toTopOf="@id/buttonRetrySomethingError"
             app:layout_constraintEnd_toEndOf="parent"
