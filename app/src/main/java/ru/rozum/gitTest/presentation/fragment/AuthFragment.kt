@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentAuthBinding
 import ru.rozum.gitTest.presentation.fragment.dialog.ErrorDialogFragment
-import ru.rozum.gitTest.presentation.fragment.util.collectSmall
+import ru.rozum.gitTest.presentation.fragment.util.*
 import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel
 import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel.*
 
@@ -67,8 +67,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun installState(state: State) {
-        binding.progressBarSignIn.visibility =
-            if (state is State.Loading) View.VISIBLE else View.GONE
+        binding.progressBarSignIn.visibility = setVisibility(state, State.Loading)
 
         if (state is State.InvalidInput) {
             returnBeginningStateButtonSignIn()

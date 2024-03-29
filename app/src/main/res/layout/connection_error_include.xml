@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/imageViewConnectionError"
-        style="@style/default_style_imageView_include"
-        android:contentDescription="@string/connection_error"
-        app:srcCompat="@drawable/connection_error" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textViewErrorConnection"
-        style="@style/default_style_textView_error_include"
-        android:text="@string/connection_error" />
+        <ImageView
+            android:id="@+id/imageViewConnectionError"
+            style="@style/default_style_imageView_include"
+            android:contentDescription="@string/connection_error"
+            app:layout_constraintBottom_toTopOf="@+id/buttonRefresh"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/connection_error" />
 
-    <TextView
-        android:id="@+id/textViewDetailsInfo"
-        style="@style/default_style_textView_details_info_include"
-        android:text="@string/check_internet_include" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/textViewErrorConnection"
+            style="@style/default_style_textView_error_include"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/connection_error"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewConnectionError" />
+
+        <TextView
+            android:id="@+id/textViewDetailsInfo"
+            style="@style/default_style_textView_details_info_include"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/check_internet_include"
+            app:layout_constraintTop_toBottomOf="@+id/textViewErrorConnection" />
+
+        <Button
+            android:id="@+id/buttonRefresh"
+            style="@style/default_margins_for_default_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

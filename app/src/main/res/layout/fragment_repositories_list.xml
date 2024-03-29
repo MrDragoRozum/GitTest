@@ -25,48 +25,31 @@
         tools:listitem="@layout/item_repo" />
 
     <include
-        android:id="@+id/connectionErrorRepoList"
+        android:id="@+id/includeConnectionErrorRepoList"
         layout="@layout/connection_error_include"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/buttonRetry"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <include
-        android:id="@+id/emptyRepoList"
+        android:id="@+id/includeEmptyRepoList"
         layout="@layout/empty_include"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/buttonRetry"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <include
-        android:id="@+id/somethingErrorRepoList"
+        android:id="@+id/includeSomethingErrorRepoList"
         layout="@layout/something_error_include"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <Button
-        android:id="@+id/buttonRetry"
-        style="@style/default_margins_for_default_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/retry"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewRepos" />
-
-    <Button
-        android:id="@+id/buttonRefresh"
-        style="@style/default_margins_for_default_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/refresh"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <ProgressBar
         android:id="@+id/progressBarRepoDetails"

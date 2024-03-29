@@ -1,5 +1,6 @@
 package ru.rozum.gitTest.presentation.fragment.util
 
+import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -21,3 +22,6 @@ inline fun <T> collectSmall(
         }
     }
 }
+
+fun <T> setVisibility(state: T, expected: T): Int =
+    if (state == expected) View.VISIBLE else View.GONE

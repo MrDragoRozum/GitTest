@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.rozum.gitTest.databinding.FragmentRepositoriesListBinding
 import ru.rozum.gitTest.presentation.fragment.adapter.RepositoryListAdapter
-import ru.rozum.gitTest.presentation.fragment.util.collectSmall
+import ru.rozum.gitTest.presentation.fragment.util.*
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel.State
 import javax.inject.Inject
@@ -41,9 +41,7 @@ class RepositoriesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        installAdapter()
-        state()
-        listeners()
+        install()
     }
 
     override fun onDestroyView() {
@@ -51,20 +49,10 @@ class RepositoriesListFragment : Fragment() {
         _binding = null
     }
 
-    private fun listeners() {
-        with(binding) {
-            listOf(buttonRetry, buttonRefresh).forEach {
-                it.setOnClickListener {
-                    viewModel.getRepositories()
-                }
-            }
-        }
-        adapter.onClickRepo = { repo ->
-            findNavController().navigate(
-                RepositoriesListFragmentDirections
-                    .actionRepositoriesListFragmentToDetailInfoFragment(args.userInfo, repo)
-            )
-        }
+    private fun install() {
+        installAdapter()
+        state()
+        listeners()
     }
 
     private fun installAdapter() {
@@ -81,36 +69,33 @@ class RepositoriesListFragment : Fragment() {
     }
 
     private fun installState(state: State) {
-        binding.progressBarRepoDetails.visibility =
-            if (state is State.Loading) View.VISIBLE else View.GONE
+        binding.progressBarRepoDetails.visibility = setVisibility(state, State.Loading)
+        binding.includeEmptyRepoList.root.visibility = setVisibility(state, State.Empty)
 
-        // TODO: Вынести кнопки в Include
-        if (state is State.Empty) {
-            binding.emptyRepoList.root.visibility = View.VISIBLE
-            binding.buttonRefresh.visibility = View.VISIBLE
-        } else {
-            binding.emptyRepoList.root.visibility = View.GONE
-            binding.buttonRefresh.visibility = View.GONE
+        binding.includeSomethingErrorRepoList.root.visibility =
+            setVisibility(state, State.SomethingError)
+
+        binding.includeConnectionErrorRepoList.root.visibility =
+            setVisibility(state, State.ConnectionError)
+
+        if (state is State.Loaded) adapter.submitList(state.repos)
+    }
+
+    private fun listeners() {
+        listOf(
+            binding.includeEmptyRepoList.buttonRetryEmpty,
+            binding.includeSomethingErrorRepoList.buttonRetrySomethingError,
+            binding.includeConnectionErrorRepoList.buttonRefresh
+        ).forEach {
+            it.setOnClickListener {
+                viewModel.getRepositories()
+            }
         }
-
-        if (state is State.Loaded) {
-            adapter.submitList(state.repos)
-        }
-
-        if (state is State.SomethingError) {
-            binding.somethingErrorRepoList.root.visibility = View.VISIBLE
-            binding.buttonRetry.visibility = View.VISIBLE
-        } else {
-            binding.somethingErrorRepoList.root.visibility = View.GONE
-            binding.buttonRetry.visibility = View.GONE
-        }
-
-        if (state is State.ConnectionError) {
-            binding.connectionErrorRepoList.root.visibility = View.VISIBLE
-            binding.buttonRefresh.visibility = View.VISIBLE
-        } else {
-            binding.connectionErrorRepoList.root.visibility = View.GONE
-            binding.buttonRefresh.visibility = View.GONE
+        adapter.onClickRepo = { repo ->
+            findNavController().navigate(
+                RepositoriesListFragmentDirections
+                    .actionRepositoriesListFragmentToDetailInfoFragment(args.userInfo, repo)
+            )
         }
     }
 }
