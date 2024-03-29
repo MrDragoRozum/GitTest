@@ -24,25 +24,23 @@ class RepositoryInfoViewModel @Inject constructor(
     private val args = DetailInfoFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val exceptionReadme: CoroutineExceptionHandler
     private val exceptionRepo: CoroutineExceptionHandler
+    private val _state: MutableStateFlow<State>
+    private val repoLoaded get() = (_state.value as State.Loaded).githubRepo
 
     init {
+        _state = MutableStateFlow(State.Loading)
         exceptionReadme = CoroutineExceptionHandler { _, throwable ->
-                when (throwable.message) {
-                    "404" -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
-                    else -> _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
+            if (throwable is Error) throw throwable
+            when (throwable.message) {
+                README_EMPTY -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
+                else -> _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
             }
         }
         exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
-
         setDataInGetRepository()
     }
 
-    private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asStateFlow()
-
-    private var _repoLoaded: RepoDetails? = null
-    private val repoLoaded get() = _repoLoaded
-        ?: throw IllegalArgumentException("repoLoaded does not be null!")
 
     fun retry() {
         setDataInGetRepository()
@@ -60,13 +58,11 @@ class RepositoryInfoViewModel @Inject constructor(
         repositoryName: String,
         branchName: String
     ) {
-        viewModelScope.launch {
-            viewModelScope.launch(exceptionRepo) {
-                getRepositoryUseCase.invoke(repoId).also {
-                    _state.value = State.Loaded(ReadmeState.Loading, it)
-                    _repoLoaded = it
-                    getReadme(ownerName, repositoryName, branchName)
-                }
+        viewModelScope.launch(exceptionRepo) {
+            _state.value = State.Loading
+            getRepositoryUseCase.invoke(repoId).also {
+                _state.value = State.Loaded(ReadmeState.Loading, it)
+                getReadme(ownerName, repositoryName, branchName)
             }
         }
     }
@@ -74,12 +70,13 @@ class RepositoryInfoViewModel @Inject constructor(
     private fun getReadme(ownerName: String, repositoryName: String, branchName: String) {
         viewModelScope.launch(exceptionReadme) {
             getRepositoryReadmeUseCase.invoke(ownerName, repositoryName, branchName).also {
-                _state.value = State.Loaded(
-                    ReadmeState.Loaded(it),
-                    repoLoaded
-                )
+                _state.value = State.Loaded(ReadmeState.Loaded(it), repoLoaded)
             }
         }
+    }
+
+    private companion object {
+        const val README_EMPTY = "404"
     }
 
     sealed interface State {
