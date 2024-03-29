@@ -14,9 +14,10 @@
         <ImageView
             android:id="@+id/imageViewSomethingError"
             style="@style/default_style_imageView_include"
-            android:layout_width="@dimen/default_width_imageView_include"
-            android:layout_height="@dimen/default_height_imageView_include"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/something_error"
+            android:paddingBottom="8dp"
             app:layout_constraintBottom_toTopOf="@id/buttonRetrySomethingError"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,6 +39,12 @@
             android:layout_height="wrap_content"
             android:text="@string/check_something_error"
             app:layout_constraintTop_toBottomOf="@+id/textViewSomethingError" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonRetrySomethingError"
+            app:layout_constraintTop_toBottomOf="@+id/textViewCheckSomethingError" />
 
         <Button
             android:id="@+id/buttonRetrySomethingError"

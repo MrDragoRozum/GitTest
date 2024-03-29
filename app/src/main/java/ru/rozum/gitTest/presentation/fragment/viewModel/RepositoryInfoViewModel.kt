@@ -22,18 +22,23 @@ class RepositoryInfoViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val args = DetailInfoFragmentArgs.fromSavedStateHandle(savedStateHandle)
-    private val exceptionReadme: CoroutineExceptionHandler
+    private var exceptionReadme: CoroutineExceptionHandler
     private val exceptionRepo: CoroutineExceptionHandler
     private val _state: MutableStateFlow<State>
     private val repoLoaded get() = (_state.value as State.Loaded).githubRepo
+    private var isReadmeFailed: Boolean
 
     init {
+        isReadmeFailed = false
         _state = MutableStateFlow(State.Loading)
         exceptionReadme = CoroutineExceptionHandler { _, throwable ->
             if (throwable is Error) throw throwable
             when (throwable.message) {
                 README_EMPTY -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
-                else -> _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
+                else -> {
+                    _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
+                    isReadmeFailed = true
+                }
             }
         }
         exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
@@ -58,13 +63,26 @@ class RepositoryInfoViewModel @Inject constructor(
         repositoryName: String,
         branchName: String
     ) {
-        viewModelScope.launch(exceptionRepo) {
-            _state.value = State.Loading
-            getRepositoryUseCase.invoke(repoId).also {
-                _state.value = State.Loaded(ReadmeState.Loading, it)
-                getReadme(ownerName, repositoryName, branchName)
+        if (isReadmeFailed) {
+            beginLoadingReadme(ownerName, repositoryName, branchName, repoLoaded)
+        } else {
+            viewModelScope.launch(exceptionRepo) {
+                _state.value = State.Loading
+                getRepositoryUseCase.invoke(repoId).also {
+                    beginLoadingReadme(ownerName, repositoryName, branchName, it)
+                }
             }
         }
+    }
+
+    private fun beginLoadingReadme(
+        ownerName: String,
+        repositoryName: String,
+        branchName: String,
+        repo: RepoDetails
+    ) {
+        _state.value = State.Loaded(ReadmeState.Loading, repo)
+        getReadme(ownerName, repositoryName, branchName)
     }
 
     private fun getReadme(ownerName: String, repositoryName: String, branchName: String) {
