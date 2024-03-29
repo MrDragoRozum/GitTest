@@ -83,9 +83,9 @@ class RepositoriesListFragment : Fragment() {
 
     private fun listeners() {
         listOf(
-            binding.includeEmptyRepoList.buttonRetryEmpty,
+            binding.includeEmptyRepoList.buttonRefreshEmpty,
             binding.includeSomethingErrorRepoList.buttonRetrySomethingError,
-            binding.includeConnectionErrorRepoList.buttonRefresh
+            binding.includeConnectionErrorRepoList.buttonRetryConnectionError
         ).forEach {
             it.setOnClickListener {
                 viewModel.getRepositories()

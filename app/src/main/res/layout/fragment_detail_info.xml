@@ -19,8 +19,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
         android:fillViewport="true"
+        android:overScrollMode="never"
         android:scrollbars="none">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,22 +69,13 @@
                 app:layout_constraintTop_toBottomOf="@id/detailsInfoRepoView" />
 
             <include
-                android:id="@+id/connectionErrorRepoDetails"
+                android:id="@+id/includeConnectionErrorRepoDetails"
                 layout="@layout/connection_error_include"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:elevation="1dp"
                 android:visibility="gone" />
 
-            <Button
-                android:id="@+id/buttonRetryDetailsRepo"
-                style="@style/default_margins_for_default_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/retry"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:layout_editor_absoluteX="8dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </LinearLayout>

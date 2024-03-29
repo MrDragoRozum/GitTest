@@ -9,20 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.noties.markwon.Markwon
-import io.noties.markwon.ext.tables.TablePlugin
-import io.noties.markwon.ext.tasklist.TaskListPlugin
-import io.noties.markwon.image.ImagesPlugin
-import io.noties.markwon.linkify.LinkifyPlugin
-import io.noties.markwon.syntax.Prism4jThemeDarkula
-import io.noties.markwon.syntax.SyntaxHighlightPlugin
-import io.noties.prism4j.Prism4j
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentDetailInfoBinding
-import ru.rozum.gitTest.presentation.fragment.markDown.*
-import ru.rozum.gitTest.presentation.fragment.util.collectSmall
+import ru.rozum.gitTest.presentation.fragment.util.*
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel
 import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel.*
-
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DetailInfoFragment : Fragment() {
@@ -31,6 +23,9 @@ class DetailInfoFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<RepositoryInfoViewModel>()
+
+    @Inject
+    lateinit var markwon: Markwon
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +37,15 @@ class DetailInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        install()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun install() {
         state()
         listeners()
     }
@@ -50,7 +54,7 @@ class DetailInfoFragment : Fragment() {
         binding.toolbarRepoDetails.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
-        binding.buttonRetryDetailsRepo.setOnClickListener {
+        binding.includeConnectionErrorRepoDetails.buttonRetryConnectionError.setOnClickListener {
             viewModel.retry()
         }
     }
@@ -62,66 +66,25 @@ class DetailInfoFragment : Fragment() {
     }
 
     private fun installState(state: State) {
-        binding.progressBarRepoDetails.visibility =
-            if (state is State.Loading) View.VISIBLE else View.GONE
-
-        if (state is State.Error) {
-            binding.connectionErrorRepoDetails.root.visibility = View.VISIBLE
-            binding.buttonRetryDetailsRepo.visibility = View.VISIBLE
-        } else {
-            binding.connectionErrorRepoDetails.root.visibility = View.GONE
-            binding.buttonRetryDetailsRepo.visibility = View.GONE
-        }
-
+        binding.progressBarRepoDetails.visibility = setVisibility(state, State.Loading)
+        binding.includeConnectionErrorRepoDetails.root.visibility =
+            setVisibility(state, State.Error)
 
         if (state is State.Loaded) {
             binding.toolbarRepoDetails.title = state.githubRepo.name
             binding.detailsInfoRepoView.repoDetails = state.githubRepo
             binding.detailsInfoRepoView.visibility = View.VISIBLE
             binding.textViewReadme.visibility = View.VISIBLE
-        }
-
-        if (state is State.Loaded) {
             installReadmeState(state.readmeState)
         }
     }
 
-    private fun installReadmeState(
-        state: ReadmeState,
-    ) {
-        if (state is ReadmeState.Loaded) {
-            // TODO: Вынести в DI
-            val prism4j = Prism4j(GrammarLocatorDef())
-            val prism4jTheme = Prism4jThemeDarkula.create()
+    private fun installReadmeState(state: ReadmeState) {
+        if (state is ReadmeState.Loaded) markwon.setMarkdown(binding.textViewReadme, state.markdown)
+        if (state is ReadmeState.Empty) binding.textViewReadme.text = getString(R.string.no_readme)
 
-            Markwon.builder(requireContext())
-                .usePlugin(TaskListPlugin.create(requireContext()))
-                .usePlugin(LinkifyPlugin.create())
-                .usePlugin(TablePlugin.create(requireContext()))
-                .usePlugin(ImagesPlugin.create())
-                .usePlugin(SyntaxHighlightPlugin.create(prism4j, prism4jTheme))
-                .build()
-                .setMarkdown(binding.textViewReadme, state.markdown)
-
-        } else if (state is ReadmeState.Empty) {
-            binding.textViewReadme.text = getString(R.string.no_readme)
-        }
-
-        binding.progressBarReadme.visibility =
-            if (state is ReadmeState.Loading) View.VISIBLE else View.GONE
-
-        // TODO: Вынести кнопку в макет include
-        if (state is ReadmeState.Error) {
-            binding.connectionErrorRepoDetails.root.visibility = View.VISIBLE
-            binding.buttonRetryDetailsRepo.visibility = View.VISIBLE
-        } else {
-            binding.connectionErrorRepoDetails.root.visibility = View.GONE
-            binding.buttonRetryDetailsRepo.visibility = View.GONE
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        binding.progressBarReadme.visibility = setVisibility(state, ReadmeState.Loading)
+        binding.includeConnectionErrorRepoDetails.root.visibility =
+            setVisibility(state, ReadmeState.Error)
     }
 }

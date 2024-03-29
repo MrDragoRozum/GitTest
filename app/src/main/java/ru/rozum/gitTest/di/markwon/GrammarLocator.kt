@@ -1,4 +1,4 @@
-package ru.rozum.gitTest.presentation.fragment.markDown
+package ru.rozum.gitTest.di.markwon
 
 import io.noties.prism4j.annotations.PrismBundle
 

@@ -13,7 +13,7 @@
             android:id="@+id/imageViewConnectionError"
             style="@style/default_style_imageView_include"
             android:contentDescription="@string/connection_error"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRefresh"
+            app:layout_constraintBottom_toTopOf="@+id/buttonRetryConnectionError"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,11 +36,11 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewErrorConnection" />
 
         <Button
-            android:id="@+id/buttonRefresh"
+            android:id="@+id/buttonRetryConnectionError"
             style="@style/default_margins_for_default_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/refresh"
+            android:text="@string/retry"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
