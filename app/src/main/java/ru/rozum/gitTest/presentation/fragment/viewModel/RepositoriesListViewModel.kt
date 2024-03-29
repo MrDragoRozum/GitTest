@@ -1,9 +1,9 @@
 package ru.rozum.gitTest.presentation.fragment.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -13,7 +13,6 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
-import kotlin.reflect.KClass
 
 @HiltViewModel
 class RepositoriesListViewModel @Inject constructor(
@@ -23,41 +22,28 @@ class RepositoriesListViewModel @Inject constructor(
     private val _state = MutableStateFlow<State>(State.Loading)
     val state = _state.asStateFlow()
 
+    private val exception: CoroutineExceptionHandler
+
     init {
+        exception = CoroutineExceptionHandler { _, throwable ->
+            when (throwable) {
+                is ConnectException, is UnknownHostException, is SocketTimeoutException ->
+                    _state.value = State.ConnectionError
+
+                is Exception -> _state.value = State.SomethingError
+                else -> throw throwable
+            }
+        }
         getRepositories()
     }
 
-    // TODO: Дополнительную проверку сделать
-    // TODO: Переписать как в RepositoryInfoViewModel
     fun getRepositories() {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                _state.value = State.Loading
-                getRepositoriesUseCase.invoke().also {
-                    if (it.isNotEmpty()) {
-                        _state.value = State.Loaded(it)
-                    } else {
-                        _state.value = State.Empty
-                    }
-                }
-            }.onException {
-                _state.value = State.ConnectionError
-            }.onFailure {
-                _state.value = State.SomethingError
+        viewModelScope.launch(exception) {
+            _state.value = State.Loading
+            getRepositoriesUseCase.invoke().also {
+                _state.value = if (it.isNotEmpty()) State.Loaded(it) else State.Empty
             }
         }
-    }
-
-    private inline fun <R, T : R> Result<T>.onException(
-        vararg exceptions: KClass<out Throwable> = arrayOf(
-            ConnectException::class,
-            UnknownHostException::class,
-            SocketTimeoutException::class
-        ),
-        transform: (exception: Throwable) -> T
-    ) = recoverCatching { ex ->
-        if (ex::class in exceptions) transform(ex)
-        else throw ex
     }
 
     sealed interface State {
