@@ -51,12 +51,12 @@ dependencies {
 
     // MarkWon
     implementation(libs.core)
-    implementation("io.noties.markwon:ext-tasklist:4.6.2")
-    implementation("io.noties.markwon:linkify:4.6.2")
-    implementation("io.noties.markwon:ext-tables:4.6.2")
-    implementation("io.noties.markwon:image:4.6.2")
-    implementation("io.noties.markwon:syntax-highlight:4.6.2")
-    kapt("io.noties:prism4j-bundler:2.0.0")
+    implementation(libs.ext.tasklist)
+    implementation(libs.linkify)
+    implementation(libs.ext.tables)
+    implementation(libs.image)
+    implementation(libs.syntax.highlight)
+    kapt(libs.prism4j.bundler)
 
     // Jetpack Hilt
     implementation(libs.hilt.android)
@@ -76,7 +76,6 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.converter.scalars)
     implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
