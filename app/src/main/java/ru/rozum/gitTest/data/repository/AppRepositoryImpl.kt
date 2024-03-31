@@ -112,9 +112,8 @@ class AppRepositoryImpl @Inject constructor(
         repositoryName: String,
         branchName: String
     ) {
-        builder.toString().replace(
-            foundLinkImage,
-            URI_RAW_GITHUB_WITH_FORMATTERS.format(
+        builder.replace(
+            Regex(foundLinkImage), URI_RAW_GITHUB_WITH_FORMATTERS.format(
                 ownerName,
                 repositoryName,
                 branchName,
