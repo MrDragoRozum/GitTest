@@ -33,7 +33,7 @@ class RepositoryInfoViewModel @Inject constructor(
         isReadmeFailed = false
 
         exceptionReadme = CoroutineExceptionHandler { _, throwable ->
-            if (throwable is Error) throw throwable
+            checkThrowableOnError(throwable)
             when (throwable.message) {
                 README_EMPTY -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
                 else -> {
@@ -42,7 +42,10 @@ class RepositoryInfoViewModel @Inject constructor(
                 }
             }
         }
-        exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
+        exceptionRepo = CoroutineExceptionHandler { _, throwable ->
+            checkThrowableOnError(throwable)
+            _state.value = State.Error
+        }
 
         setDataInGetRepository()
     }
@@ -94,6 +97,10 @@ class RepositoryInfoViewModel @Inject constructor(
                 _state.value = State.Loaded(ReadmeState.Loaded(it), repoLoaded)
             }
         }
+    }
+
+    private fun checkThrowableOnError(throwable: Throwable) {
+        if (throwable is Error) throw throwable
     }
 
     private companion object {
