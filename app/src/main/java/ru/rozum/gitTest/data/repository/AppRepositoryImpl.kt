@@ -38,7 +38,9 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun getToken(): String = client.getToken()
 
     override suspend fun getRepositories(): List<Repo> = connect(
-        response = apiGitHubService.getRepositories(client.getTokenForGitHub()),
+        response = withContext(dispatcherIO) {
+            apiGitHubService.getRepositories(client.getTokenForGitHub())
+        },
         msgException = context.getString(R.string.something_error),
     ) { list ->
         list.map {
@@ -59,7 +61,9 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
-        response = apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
+        response = withContext(dispatcherIO) {
+            apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
+        }
     ) { mapper.mapRepoDetailsToEntity(it) }
 
     override suspend fun signIn(token: String): UserInfo {
@@ -70,7 +74,9 @@ class AppRepositoryImpl @Inject constructor(
         }
 
         return connect(
-            response = apiGitHubService.getUserInfo(legalToken),
+            response = withContext(dispatcherIO) {
+                apiGitHubService.getUserInfo(legalToken)
+            },
             msgException = context.getString(R.string.info_for_dev),
             levelMessageException = MESSAGE_CODE
         ) {
@@ -84,7 +90,9 @@ class AppRepositoryImpl @Inject constructor(
         repositoryName: String,
         branchName: String
     ): String = connect(
-        response = rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
+        response = withContext(dispatcherIO) {
+            rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName)
+        },
         levelMessageException = CODE
     ) { readme ->
         val builder = StringBuilder(readme)
@@ -124,10 +132,18 @@ class AppRepositoryImpl @Inject constructor(
         result: (T) -> V
     ): V {
         if (response.isSuccessful) return result.invoke(response.body()!!)
+
+        val code = response.code()
         when (levelMessageException) {
             MESSAGE -> throw ConnectException(msgException)
-            CODE -> throw ConnectException("${response.code()}")
-            MESSAGE_CODE -> throw ConnectException("Code: ${response.code()}\n$msgException")
+            CODE -> throw ConnectException("$code")
+            MESSAGE_CODE -> throw ConnectException(
+                context.getString(
+                    R.string.message_details,
+                    code,
+                    msgException
+                )
+            )
         }
     }
 

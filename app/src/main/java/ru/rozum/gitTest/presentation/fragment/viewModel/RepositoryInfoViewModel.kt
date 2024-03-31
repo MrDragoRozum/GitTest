@@ -22,15 +22,16 @@ class RepositoryInfoViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val args = DetailInfoFragmentArgs.fromSavedStateHandle(savedStateHandle)
-    private var exceptionReadme: CoroutineExceptionHandler
+    private val exceptionReadme: CoroutineExceptionHandler
     private val exceptionRepo: CoroutineExceptionHandler
     private val _state: MutableStateFlow<State>
     private val repoLoaded get() = (_state.value as State.Loaded).githubRepo
     private var isReadmeFailed: Boolean
 
     init {
-        isReadmeFailed = false
         _state = MutableStateFlow(State.Loading)
+        isReadmeFailed = false
+
         exceptionReadme = CoroutineExceptionHandler { _, throwable ->
             if (throwable is Error) throw throwable
             when (throwable.message) {
@@ -42,6 +43,7 @@ class RepositoryInfoViewModel @Inject constructor(
             }
         }
         exceptionRepo = CoroutineExceptionHandler { _, _ -> _state.value = State.Error }
+
         setDataInGetRepository()
     }
 
@@ -65,13 +67,14 @@ class RepositoryInfoViewModel @Inject constructor(
     ) {
         if (isReadmeFailed) {
             beginLoadingReadme(ownerName, repositoryName, branchName, repoLoaded)
-        } else {
-            viewModelScope.launch(exceptionRepo) {
-                _state.value = State.Loading
-                getRepositoryUseCase.invoke(repoId).also {
-                    beginLoadingReadme(ownerName, repositoryName, branchName, it)
-                }
+            return
+        }
+        viewModelScope.launch(exceptionRepo) {
+            _state.value = State.Loading
+            getRepositoryUseCase.invoke(repoId).also {
+                beginLoadingReadme(ownerName, repositoryName, branchName, it)
             }
+
         }
     }
 
