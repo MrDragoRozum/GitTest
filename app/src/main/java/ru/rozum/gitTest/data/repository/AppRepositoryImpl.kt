@@ -19,7 +19,8 @@ import ru.rozum.gitTest.data.network.dto.RepoDto
 import ru.rozum.gitTest.domain.entity.*
 import ru.rozum.gitTest.domain.repository.AppRepository
 import javax.inject.Inject
-import ru.rozum.gitTest.data.repository.LevelException.*
+import ru.rozum.gitTest.data.repository.Level.*
+import ru.rozum.gitTest.data.repository.entity.LevelException
 import ru.rozum.gitTest.di.RegexLegalTokenQualifier
 import ru.rozum.gitTest.di.RegexParsingImagesFromFolderQualifier
 import java.net.ConnectException
@@ -41,7 +42,10 @@ class AppRepositoryImpl @Inject constructor(
         response = withContext(dispatcherIO) {
             apiGitHubService.getRepositories(client.getTokenForGitHub())
         },
-        msgException = context.getString(R.string.something_error),
+        levelException = LevelException(
+            context.getString(R.string.something_error),
+            MESSAGE
+        ),
     ) { list ->
         list.map {
             withContext(dispatcherIO) {
@@ -63,8 +67,14 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
         response = withContext(dispatcherIO) {
             apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
-        }
-    ) { mapper.mapRepoDetailsToEntity(it) }
+        },
+        levelException = LevelException(
+            context.getString(R.string.connection_error),
+            MESSAGE
+        )
+    ) {
+        mapper.mapRepoDetailsToEntity(it)
+    }
 
     override suspend fun signIn(token: String): UserInfo {
         val legalToken = "bearer $token"
@@ -77,8 +87,10 @@ class AppRepositoryImpl @Inject constructor(
             response = withContext(dispatcherIO) {
                 apiGitHubService.getUserInfo(legalToken)
             },
-            msgException = context.getString(R.string.info_for_dev),
-            levelMessageException = MESSAGE_CODE
+            levelException = LevelException(
+                context.getString(R.string.info_for_dev),
+                MESSAGE_CODE
+            )
         ) {
             client.saveToken(token)
             mapper.mapUserInfoDtoToEntity(it)
@@ -93,7 +105,10 @@ class AppRepositoryImpl @Inject constructor(
         response = withContext(dispatcherIO) {
             rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName)
         },
-        levelMessageException = CODE
+        levelException = LevelException(
+            context.getString(R.string.connection_error),
+            CODE
+        )
     ) { readme ->
         val builder = StringBuilder(readme)
         regexParsingImagesFromFolder
@@ -126,24 +141,22 @@ class AppRepositoryImpl @Inject constructor(
 
     private inline fun <T, V> connect(
         response: Response<T>,
-        msgException: String = context.getString(R.string.connection_error),
-        levelMessageException: LevelException = MESSAGE,
+        levelException: LevelException,
         result: (T) -> V
     ): V {
-        if (response.isSuccessful) return result.invoke(response.body()!!)
+        if (response.isSuccessful) return result(response.body()!!)
 
         val code = response.code()
-        when (levelMessageException) {
-            MESSAGE -> throw ConnectException(msgException)
-            CODE -> throw ConnectException("$code")
-            MESSAGE_CODE -> throw ConnectException(
-                context.getString(
-                    R.string.message_details,
-                    code,
-                    msgException
-                )
+        val message = when (levelException.level) {
+            MESSAGE -> levelException.message
+            CODE -> "$code"
+            MESSAGE_CODE -> context.getString(
+                R.string.message_details,
+                code,
+                levelException.message
             )
         }
+        throw ConnectException(message)
     }
 
     private companion object {
@@ -151,6 +164,6 @@ class AppRepositoryImpl @Inject constructor(
     }
 }
 
-private enum class LevelException {
+enum class Level {
     MESSAGE, MESSAGE_CODE, CODE
 }
