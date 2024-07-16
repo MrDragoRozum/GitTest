@@ -13,7 +13,7 @@ import retrofit2.Response
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.data.external.ColorJson
 import ru.rozum.gitTest.data.local.*
-import ru.rozum.gitTest.data.mapper.AppMapper
+import ru.rozum.gitTest.data.mapper.toEntity
 import ru.rozum.gitTest.data.network.api.*
 import ru.rozum.gitTest.data.network.dto.RepoDto
 import ru.rozum.gitTest.domain.entity.*
@@ -28,7 +28,6 @@ import java.net.ConnectException
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val rawGitHubService: RawGitHubService,
-    private val mapper: AppMapper,
     private val client: KeyValueStorage,
     private val dispatcherIO: CoroutineDispatcher,
     @RegexLegalTokenQualifier private val regexLegalToken: Regex,
@@ -50,7 +49,7 @@ class AppRepositoryImpl @Inject constructor(
         list.map {
             withContext(dispatcherIO) {
                 setColorLanguageRGBInRepoDto(it)
-                mapper.mapRepoDtoToEntity(it)
+                it.toEntity()
             }
         }
     }
@@ -73,7 +72,7 @@ class AppRepositoryImpl @Inject constructor(
             MESSAGE
         )
     ) {
-        mapper.mapRepoDetailsToEntity(it)
+        it.toEntity()
     }
 
     override suspend fun signIn(token: String): UserInfo {
@@ -93,7 +92,7 @@ class AppRepositoryImpl @Inject constructor(
             )
         ) {
             client.saveToken(token)
-            mapper.mapUserInfoDtoToEntity(it)
+            it.toEntity()
         }
     }
 
