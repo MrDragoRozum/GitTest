@@ -22,6 +22,8 @@ retrofit = "2.9.0"
 hilt = "2.51"
 kotlinSerialization = "1.9.23"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+securityState = "1.0.0-alpha03"
+securityCryptoKtx = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +32,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationUiKtx" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-security-state = { module = "androidx.security:security-state", version.ref = "securityState" }
 converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 core = { module = "io.noties.markwon:core", version.ref = "core" }
 ext-tables = { module = "io.noties.markwon:ext-tables", version.ref = "core" }
@@ -49,6 +52,7 @@ prism4j-bundler = { module = "io.noties:prism4j-bundler", version.ref = "prism4j
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 syntax-highlight = { module = "io.noties.markwon:syntax-highlight", version.ref = "core" }
+androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
