@@ -24,7 +24,7 @@ class AuthViewModel @Inject constructor(
     private val _state = MutableSharedFlow<State>()
     val state = _state.asSharedFlow()
 
-    private val _token = MutableSharedFlow<String>()
+    private val _token = MutableSharedFlow<String>(replay = 1)
     val token = _token.asSharedFlow()
 
     private val exception = CoroutineExceptionHandler { _, throwable ->
@@ -38,7 +38,9 @@ class AuthViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch { _token.emit(getTokenUseCase.invoke()) }
+        viewModelScope.launch {
+            _token.emit(getTokenUseCase())
+        }
     }
 
     fun onSignButtonPressed(token: String) {

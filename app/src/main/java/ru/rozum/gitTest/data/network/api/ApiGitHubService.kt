@@ -6,12 +6,12 @@ import retrofit2.http.Header
 import retrofit2.http.Path
 import ru.rozum.gitTest.data.network.dto.RepoDetailsDto
 import ru.rozum.gitTest.data.network.dto.RepoDto
-import ru.rozum.gitTest.data.network.dto.UserInfoDto
+import ru.rozum.gitTest.data.network.dto.UserDto
 
 interface ApiGitHubService {
 
     @GET("user")
-    suspend fun signIn(@Header("Authorization") token: String): Response<UserInfoDto>
+    suspend fun signIn(@Header("Authorization") token: String): Response<UserDto>
 
     @GET("repositories/{id}")
     suspend fun getRepository(

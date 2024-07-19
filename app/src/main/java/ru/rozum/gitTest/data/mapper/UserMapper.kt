@@ -1,6 +1,6 @@
 package ru.rozum.gitTest.data.mapper
 
-import ru.rozum.gitTest.data.network.dto.UserInfoDto
+import ru.rozum.gitTest.data.network.dto.UserDto
 import ru.rozum.gitTest.domain.entity.UserInfo
 
-fun UserInfoDto.toEntity(): UserInfo = UserInfo(login = login)
+fun UserDto.toEntity(): UserInfo = UserInfo(login = login)
