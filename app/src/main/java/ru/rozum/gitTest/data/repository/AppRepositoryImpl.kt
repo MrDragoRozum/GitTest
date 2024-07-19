@@ -12,22 +12,25 @@ import kotlinx.serialization.json.decodeFromStream
 import retrofit2.Response
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.data.external.ColorJson
-import ru.rozum.gitTest.data.local.*
+import ru.rozum.gitTest.data.local.KeyValueStorage
 import ru.rozum.gitTest.data.mapper.toEntity
-import ru.rozum.gitTest.data.network.api.*
+import ru.rozum.gitTest.data.network.api.ApiGitHubService
 import ru.rozum.gitTest.data.network.dto.RepoDto
-import ru.rozum.gitTest.domain.entity.*
-import ru.rozum.gitTest.domain.repository.AppRepository
-import javax.inject.Inject
-import ru.rozum.gitTest.data.repository.Level.*
+import ru.rozum.gitTest.data.repository.Level.CODE
+import ru.rozum.gitTest.data.repository.Level.MESSAGE
+import ru.rozum.gitTest.data.repository.Level.MESSAGE_CODE
 import ru.rozum.gitTest.data.repository.entity.LevelException
 import ru.rozum.gitTest.di.RegexLegalTokenQualifier
 import ru.rozum.gitTest.di.RegexParsingImagesFromFolderQualifier
+import ru.rozum.gitTest.domain.entity.Repo
+import ru.rozum.gitTest.domain.entity.RepoDetails
+import ru.rozum.gitTest.domain.entity.UserInfo
+import ru.rozum.gitTest.domain.repository.AppRepository
 import java.net.ConnectException
+import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
-    private val rawGitHubService: RawGitHubService,
     private val client: KeyValueStorage,
     private val dispatcherIO: CoroutineDispatcher,
     @RegexLegalTokenQualifier private val regexLegalToken: Regex,
@@ -35,11 +38,11 @@ class AppRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context
 ) : AppRepository {
 
-    override suspend fun getToken(): String = client.getToken()
+    override fun getToken(): String = client.getToken()
 
     override suspend fun getRepositories(): List<Repo> = connect(
         response = withContext(dispatcherIO) {
-            apiGitHubService.getRepositories(client.getTokenForGitHub())
+            apiGitHubService.getRepositories()
         },
         levelException = LevelException(
             context.getString(R.string.something_error),
@@ -65,7 +68,7 @@ class AppRepositoryImpl @Inject constructor(
 
     override suspend fun getRepository(repoId: String): RepoDetails = connect(
         response = withContext(dispatcherIO) {
-            apiGitHubService.getRepository(client.getTokenForGitHub(), repoId)
+            apiGitHubService.getRepository(repoId)
         },
         levelException = LevelException(
             context.getString(R.string.connection_error),
@@ -101,9 +104,7 @@ class AppRepositoryImpl @Inject constructor(
         repositoryName: String,
         branchName: String
     ): String = connect(
-        response = withContext(dispatcherIO) {
-            rawGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName)
-        },
+        response = apiGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
         levelException = LevelException(
             context.getString(R.string.connection_error),
             CODE

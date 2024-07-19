@@ -9,13 +9,11 @@ class KeyValueStorage @Inject constructor(private val sharedPreferences: SharedP
 
     fun saveToken(key: String) = sharedPreferences.edit().putString(KEY_USER, key).apply()
 
-    suspend fun getToken(): String = withContext(Dispatchers.IO) {
-        sharedPreferences.getString(KEY_USER, null) ?: TOKEN_NO_FOUND_EMPTY
-    }
+    fun getToken(): String = sharedPreferences.getString(KEY_USER, null) ?: TOKEN_NO_FOUND_EMPTY
 
     // TODO: Убрать suspend или проверить надобность на этого
 
-    suspend fun getTokenForGitHub() : String = "bearer ${getToken()}"
+    suspend fun getTokenForGitHub(): String = "bearer ${getToken()}"
 
     private companion object {
         const val KEY_USER = "KEY_USER"
