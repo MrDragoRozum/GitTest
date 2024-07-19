@@ -51,22 +51,12 @@ class AppRepositoryImpl @Inject constructor(
     ) { list ->
         list.map {
             withContext(dispatcherIO) {
-                setColorLanguageRGBInRepoDto(it)
-                it.toEntity()
+                it.toEntity(context)
             }
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private fun setColorLanguageRGBInRepoDto(repoDto: RepoDto) {
-        context.resources.openRawResource(R.raw.colors).use { inputStream ->
-            Json.decodeFromStream<JsonObject>(inputStream)[repoDto.language]?.let {
-                repoDto.colorLanguageRGB = Json.decodeFromJsonElement<ColorJson>(it).color
-            }
-        }
-    }
-
-    override suspend fun getRepository(repoId: String): RepoDetails = connect(
+    override suspend fun getRepository(repoId: String): RepoDetails = executeRequest(
         response = withContext(dispatcherIO) {
             apiGitHubService.getRepository(repoId)
         },
