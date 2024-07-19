@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.data.local.KeyValueStorage
 import ru.rozum.gitTest.data.formatter.getFormattedReadmeWithLinksImage
@@ -19,20 +18,21 @@ import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.entity.RepoDetails
 import ru.rozum.gitTest.domain.entity.UserInfo
 import ru.rozum.gitTest.domain.repository.AppRepository
-import java.net.ConnectException
+import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val client: KeyValueStorage,
     private val dispatcherIO: CoroutineDispatcher,
+    private val executorRequest: ExecutorRequest,
     @RegexLegalTokenQualifier private val regexLegalToken: Regex,
     @ApplicationContext val context: Context
 ) : AppRepository {
 
     override fun getToken(): String = client.getToken()
 
-    override suspend fun getRepositories(): List<Repo> = executeRequest(
+    override suspend fun getRepositories(): List<Repo> = executorRequest.execute(
         response = withContext(dispatcherIO) {
             apiGitHubService.getRepositories()
         },
@@ -40,15 +40,15 @@ class AppRepositoryImpl @Inject constructor(
             context.getString(R.string.something_error),
             MESSAGE
         ),
-    ) { list ->
-        list.map {
+    ) { repos ->
+        repos.map {
             withContext(dispatcherIO) {
                 it.toEntity(context)
             }
         }
     }
 
-    override suspend fun getRepository(repoId: String): RepoDetails = executeRequest(
+    override suspend fun getRepository(repoId: String): RepoDetails = executorRequest.execute(
         response = withContext(dispatcherIO) {
             apiGitHubService.getRepository(repoId)
         },
@@ -56,8 +56,8 @@ class AppRepositoryImpl @Inject constructor(
             context.getString(R.string.connection_error),
             MESSAGE
         )
-    ) {
-        it.toEntity()
+    ) { repo ->
+        repo.toEntity()
     }
 
     override suspend fun signIn(token: String): UserInfo {
@@ -67,7 +67,7 @@ class AppRepositoryImpl @Inject constructor(
                 throw IllegalArgumentException(context.getString(R.string.invalid_token))
         }
 
-        return executeRequest(
+        return executorRequest.execute(
             response = withContext(dispatcherIO) {
                 apiGitHubService.signIn(legalToken)
             },
@@ -85,7 +85,7 @@ class AppRepositoryImpl @Inject constructor(
         ownerName: String,
         repositoryName: String,
         branchName: String
-    ): String = executeRequest(
+    ): String = executorRequest.execute(
         response = apiGitHubService.getRepositoryReadme(ownerName, repositoryName, branchName),
         levelException = LevelException(
             context.getString(R.string.connection_error),
@@ -97,32 +97,6 @@ class AppRepositoryImpl @Inject constructor(
             repositoryName,
             branchName
         )
-    }
-
-    private inline fun <T, V> executeRequest(
-        response: Response<T>,
-        levelException: LevelException,
-        result: (T) -> V
-    ): V {
-        if (response.isSuccessful) return result(response.body()!!)
-        returnNetworkError(response, levelException)
-    }
-
-    private fun <T> returnNetworkError(
-        response: Response<T>,
-        levelException: LevelException
-    ): Nothing {
-        val code = response.code()
-        val message = when (levelException.level) {
-            MESSAGE -> levelException.message
-            CODE -> "$code"
-            MESSAGE_CODE -> context.getString(
-                R.string.message_details,
-                code,
-                levelException.message
-            )
-        }
-        throw ConnectException(message)
     }
 }
 

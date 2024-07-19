@@ -12,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.rozum.gitTest.R
+import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import ru.rozum.gitTest.data.repository.AppRepositoryImpl
 import ru.rozum.gitTest.domain.repository.AppRepository
 import javax.inject.Singleton
@@ -44,5 +45,9 @@ interface DataModule {
 
             return sharedPreferences
         }
+
+        @Provides
+        fun provideExecutorRequest(@ApplicationContext context: Context): ExecutorRequest =
+            ExecutorRequest(context)
     }
 }
