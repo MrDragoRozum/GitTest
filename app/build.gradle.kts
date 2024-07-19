@@ -50,8 +50,8 @@ configurations.all {
 dependencies {
 
     // androidx.security
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
-    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.androidx.security.crypto.ktx.v110alpha06)
 
     // MarkWon
     implementation(libs.core)
@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.converter.scalars)
     implementation(libs.okhttp)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)

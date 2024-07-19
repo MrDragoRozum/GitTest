@@ -87,7 +87,7 @@ class AppRepositoryImpl @Inject constructor(
 
         return connect(
             response = withContext(dispatcherIO) {
-                apiGitHubService.getUserInfo(legalToken)
+                apiGitHubService.signIn(legalToken)
             },
             levelException = LevelException(
                 context.getString(R.string.info_for_dev),
