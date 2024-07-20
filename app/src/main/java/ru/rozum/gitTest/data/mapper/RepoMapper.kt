@@ -1,6 +1,8 @@
 package ru.rozum.gitTest.data.mapper
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -13,7 +15,7 @@ import ru.rozum.gitTest.data.network.dto.RepoDto
 import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.entity.RepoDetails
 
-fun RepoDto.toEntity(context: Context): Repo = Repo(
+suspend fun RepoDto.toEntity(context: Context): Repo = Repo(
     id = id,
     name = name,
     description = isExist(description),
@@ -22,14 +24,16 @@ fun RepoDto.toEntity(context: Context): Repo = Repo(
     branch = branch
 )
 
-private fun RepoDto.getColor(context: Context): String = findColor(context) ?: DEFAULT_COLOR
+private suspend fun RepoDto.getColor(context: Context): String = findColor(context) ?: DEFAULT_COLOR
 
 @OptIn(ExperimentalSerializationApi::class)
-private fun RepoDto.findColor(
+private suspend fun RepoDto.findColor(
     context: Context
-): String? = context.resources.openRawResource(R.raw.colors).use { inputStream ->
-    Json.decodeFromStream<JsonObject>(inputStream)[language]?.let {
-        Json.decodeFromJsonElement<ColorJson>(it).color
+): String? = withContext(Dispatchers.IO) {
+    context.resources.openRawResource(R.raw.colors).use { inputStream ->
+        Json.decodeFromStream<JsonObject>(inputStream)[language]?.let {
+            Json.decodeFromJsonElement<ColorJson>(it).color
+        }
     }
 }
 

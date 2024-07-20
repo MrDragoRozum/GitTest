@@ -2,8 +2,6 @@ package ru.rozum.gitTest.data.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.data.formatter.Readme
 import ru.rozum.gitTest.data.local.KeyValueStorage
@@ -23,7 +21,6 @@ import javax.inject.Inject
 class AppRepositoryImpl @Inject constructor(
     private val apiGitHubService: ApiGitHubService,
     private val client: KeyValueStorage,
-    private val dispatcherIO: CoroutineDispatcher,
     private val executorRequest: ExecutorRequest,
     @ApplicationContext val context: Context
 ) : AppRepository {
@@ -31,25 +28,19 @@ class AppRepositoryImpl @Inject constructor(
     override fun getToken(): String = client.getToken()
 
     override suspend fun getRepositories(): List<Repo> = executorRequest.execute(
-        response = withContext(dispatcherIO) {
-            apiGitHubService.getRepositories()
-        },
+        response = apiGitHubService.getRepositories(),
         levelException = LevelException(
             context.getString(R.string.something_error),
             MESSAGE
         ),
     ) { repos ->
-        repos.map {
-            withContext(dispatcherIO) {
-                it.toEntity(context)
-            }
+        repos.map { repo ->
+            repo.toEntity(context)
         }
     }
 
     override suspend fun getRepository(repoId: String): RepoDetails = executorRequest.execute(
-        response = withContext(dispatcherIO) {
-            apiGitHubService.getRepository(repoId)
-        },
+        response = apiGitHubService.getRepository(repoId),
         levelException = LevelException(
             context.getString(R.string.connection_error),
             MESSAGE
@@ -59,16 +50,14 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signIn(token: String): UserInfo = executorRequest.execute(
-        response = withContext(dispatcherIO) {
-            apiGitHubService.signIn(token)
-        },
+        response = apiGitHubService.signIn(token),
         levelException = LevelException(
             context.getString(R.string.info_for_dev),
             MESSAGE_CODE
         )
-    ) {
+    ) { user ->
         client.saveToken(token)
-        it.toEntity()
+        user.toEntity()
     }
 
 
