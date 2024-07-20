@@ -49,26 +49,47 @@ object ApiFactoryModule {
 
     private fun getOkHttpClient(token: String, logging: HttpLoggingInterceptor) =
         OkHttpClient.Builder()
+
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
 
-                if (isRequestSignInGitHub(originalRequest) || isRequestGetReadme(originalRequest))
+                if (isRequestGetReadme(originalRequest))
                     return@addInterceptor chain.proceed(originalRequest)
 
-                val newHeaders = originalRequest.headers.newBuilder()
-                    .add(HEADER_ACCEPT, HEADER_ACCEPT_BODY)
-                    .add(HEADER_TOKEN, "$HEADER_TOKEN_BODY $token")
-                    .build()
+                if (isRequestSignInGitHub(originalRequest)) {
+                    val currentHeader = originalRequest.headers[HEADER_TOKEN]
+                        ?: error("Header \"Authorization\" не найден!")
 
-                val newRequest = originalRequest
-                    .newBuilder()
-                    .headers(newHeaders)
-                    .build()
+                    val newHeaderBody = "bearer $currentHeader"
+                    val newHeaders = originalRequest.headers.newBuilder().set(
+                        HEADER_TOKEN, newHeaderBody
+                    ).build()
 
+                    val newRequest = originalRequest.newBuilder()
+                        .headers(newHeaders)
+                        .build()
+
+                    return@addInterceptor chain.proceed(newRequest)
+                }
+
+                val newRequest = getNewRequestWithAddedHeaders(originalRequest, token)
                 chain.proceed(newRequest)
             }
             .addInterceptor(logging)
             .build()
+
+    private fun getNewRequestWithAddedHeaders(originalRequest: Request, token: String): Request {
+        val newHeaders = originalRequest.headers.newBuilder()
+            .add(HEADER_ACCEPT, HEADER_ACCEPT_BODY)
+            .add(HEADER_TOKEN, "$HEADER_TOKEN_BODY $token")
+            .build()
+
+        val newRequest = originalRequest
+            .newBuilder()
+            .headers(newHeaders)
+            .build()
+        return newRequest
+    }
 
 
     private fun isRequestGetReadme(request: Request) =

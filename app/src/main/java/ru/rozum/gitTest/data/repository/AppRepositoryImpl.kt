@@ -14,7 +14,6 @@ import ru.rozum.gitTest.data.repository.Level.CODE
 import ru.rozum.gitTest.data.repository.Level.MESSAGE
 import ru.rozum.gitTest.data.repository.Level.MESSAGE_CODE
 import ru.rozum.gitTest.data.repository.entity.LevelException
-import ru.rozum.gitTest.di.RegexLegalTokenQualifier
 import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.entity.RepoDetails
 import ru.rozum.gitTest.domain.entity.UserInfo
@@ -26,7 +25,6 @@ class AppRepositoryImpl @Inject constructor(
     private val client: KeyValueStorage,
     private val dispatcherIO: CoroutineDispatcher,
     private val executorRequest: ExecutorRequest,
-    @RegexLegalTokenQualifier private val regexLegalToken: Regex,
     @ApplicationContext val context: Context
 ) : AppRepository {
 
@@ -60,26 +58,19 @@ class AppRepositoryImpl @Inject constructor(
         repo.toEntity()
     }
 
-    override suspend fun signIn(token: String): UserInfo {
-        val legalToken = "bearer $token"
-        regexLegalToken.also {
-            if (!legalToken.matches(it))
-                throw IllegalArgumentException(context.getString(R.string.invalid_token))
-        }
-
-        return executorRequest.execute(
-            response = withContext(dispatcherIO) {
-                apiGitHubService.signIn(legalToken)
-            },
-            levelException = LevelException(
-                context.getString(R.string.info_for_dev),
-                MESSAGE_CODE
-            )
-        ) {
-            client.saveToken(token)
-            it.toEntity()
-        }
+    override suspend fun signIn(token: String): UserInfo = executorRequest.execute(
+        response = withContext(dispatcherIO) {
+            apiGitHubService.signIn(token)
+        },
+        levelException = LevelException(
+            context.getString(R.string.info_for_dev),
+            MESSAGE_CODE
+        )
+    ) {
+        client.saveToken(token)
+        it.toEntity()
     }
+
 
     override suspend fun getRepositoryReadme(
         ownerName: String,
