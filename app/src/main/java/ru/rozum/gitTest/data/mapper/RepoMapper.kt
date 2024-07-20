@@ -16,8 +16,8 @@ import ru.rozum.gitTest.domain.entity.RepoDetails
 fun RepoDto.toEntity(context: Context): Repo = Repo(
     id = id,
     name = name,
-    description = description ?: REPO_WITHOUT_IT,
-    language = language ?: REPO_WITHOUT_IT,
+    description = isExist(description),
+    language = isExist(language),
     colorLanguageRGB = getColor(context),
     branch = branch
 )
@@ -37,13 +37,15 @@ fun RepoDetailsDto.toEntity(): RepoDetails = RepoDetails(
     id = id,
     name = name,
     htmlUser = htmlUrl,
-    license = license ?: REPO_WITHOUT_IT,
+    license = isExist(license),
     stars = stars,
     forks = forks,
     watchers = watchers,
-    description = description ?: REPO_WITHOUT_IT,
-    language = language ?: REPO_WITHOUT_IT
+    description = isExist(description),
+    language = isExist(language)
 )
+
+private fun isExist(value: String?): String = value ?: REPO_WITHOUT_IT
 
 private const val REPO_WITHOUT_IT = ""
 private const val DEFAULT_COLOR = "#FFFFFF"
