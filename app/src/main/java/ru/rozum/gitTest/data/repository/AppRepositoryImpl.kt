@@ -5,10 +5,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import ru.rozum.gitTest.R
+import ru.rozum.gitTest.data.formatter.Readme
 import ru.rozum.gitTest.data.local.KeyValueStorage
-import ru.rozum.gitTest.data.formatter.getFormattedReadmeWithLinksImage
 import ru.rozum.gitTest.data.mapper.toEntity
 import ru.rozum.gitTest.data.network.api.ApiGitHubService
+import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import ru.rozum.gitTest.data.repository.Level.CODE
 import ru.rozum.gitTest.data.repository.Level.MESSAGE
 import ru.rozum.gitTest.data.repository.Level.MESSAGE_CODE
@@ -18,7 +19,6 @@ import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.entity.RepoDetails
 import ru.rozum.gitTest.domain.entity.UserInfo
 import ru.rozum.gitTest.domain.repository.AppRepository
-import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import javax.inject.Inject
 
 class AppRepositoryImpl @Inject constructor(
@@ -92,10 +92,11 @@ class AppRepositoryImpl @Inject constructor(
             CODE
         )
     ) { readme ->
-        StringBuilder(readme).getFormattedReadmeWithLinksImage(
-            ownerName,
-            repositoryName,
-            branchName
+        Readme.getFormattedWithLinksImage(
+            value = StringBuilder(readme),
+            ownerName = ownerName,
+            repositoryName = repositoryName,
+            branchName = branchName
         )
     }
 }
