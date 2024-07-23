@@ -1,8 +1,8 @@
 package ru.rozum.gitTest.domain.repository
 
-import ru.rozum.gitTest.domain.entity.UserInfo
+import ru.rozum.gitTest.domain.entity.User
 
 interface UserRepository {
-    suspend fun signIn(token: String): UserInfo
+    suspend fun signIn(token: String): User
     fun getToken(): String
 }

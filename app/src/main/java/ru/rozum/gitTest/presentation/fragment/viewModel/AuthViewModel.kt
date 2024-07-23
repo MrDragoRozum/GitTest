@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import ru.rozum.gitTest.domain.entity.UserInfo
+import ru.rozum.gitTest.domain.entity.User
 import ru.rozum.gitTest.domain.repository.UserRepository
 import javax.inject.Inject
 
@@ -63,6 +63,6 @@ class AuthViewModel @Inject constructor(
 
     sealed interface Action {
         data class ShowError(val message: String?) : Action
-        data class RouteToMain(val user: UserInfo) : Action
+        data class RouteToMain(val user: User) : Action
     }
 }
