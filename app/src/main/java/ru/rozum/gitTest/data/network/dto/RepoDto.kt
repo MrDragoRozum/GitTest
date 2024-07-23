@@ -10,6 +10,4 @@ data class RepoDto(
     @SerialName("description") val description: String?,
     @SerialName("language") val language: String?,
     @SerialName("default_branch") val branch: String,
-    var colorLanguageRGB: String = "#FFFFFF",
-    // TODO: DTO не должен хранить в себе цвета, создать отдельую сущность для этого!
 )
