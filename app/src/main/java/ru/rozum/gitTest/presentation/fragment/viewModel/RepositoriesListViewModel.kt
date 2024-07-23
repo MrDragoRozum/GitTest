@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.Repo
-import ru.rozum.gitTest.domain.usecase.GetRepositoriesUseCase
+import ru.rozum.gitTest.domain.repository.GithubRepoRepository
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RepositoriesListViewModel @Inject constructor(
-    private val getRepositoriesUseCase: GetRepositoriesUseCase
+    private val githubRepoRepository: GithubRepoRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<State>(State.Loading)
@@ -40,7 +40,7 @@ class RepositoriesListViewModel @Inject constructor(
     fun getRepositories() {
         viewModelScope.launch(exception) {
             _state.value = State.Loading
-            getRepositoriesUseCase.invoke().also {
+            githubRepoRepository.getRepositories().also {
                 _state.value = if (it.isNotEmpty()) State.Loaded(it) else State.Empty
             }
         }

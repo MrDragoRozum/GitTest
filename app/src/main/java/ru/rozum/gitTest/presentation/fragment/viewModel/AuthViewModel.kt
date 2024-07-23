@@ -8,14 +8,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.UserInfo
-import ru.rozum.gitTest.domain.usecase.GetTokenUseCase
-import ru.rozum.gitTest.domain.usecase.SignInUseCase
+import ru.rozum.gitTest.domain.repository.UserRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val signInUseCase: SignInUseCase,
-    private val getTokenUseCase: GetTokenUseCase
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _actions = MutableSharedFlow<Action>()
@@ -39,7 +37,7 @@ class AuthViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _token.emit(getTokenUseCase())
+            _token.emit(userRepository.getToken())
         }
     }
 
@@ -55,7 +53,7 @@ class AuthViewModel @Inject constructor(
 
     private suspend fun beginToSign(token: String) {
         _state.emit(State.Loading)
-        signInUseCase.invoke(token).also { _actions.emit(Action.RouteToMain(it)) }
+        userRepository.signIn(token).also { _actions.emit(Action.RouteToMain(it)) }
     }
 
     sealed interface State {

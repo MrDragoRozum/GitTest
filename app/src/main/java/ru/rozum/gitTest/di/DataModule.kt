@@ -4,19 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import androidx.security.crypto.MasterKeys
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.rozum.gitTest.R
-import ru.rozum.gitTest.data.network.util.ExecutorRequest
-import ru.rozum.gitTest.data.repository.AppRepositoryImpl
 import ru.rozum.gitTest.data.repository.GithubRepoRepositoryImpl
 import ru.rozum.gitTest.data.repository.UserRepositoryImpl
-import ru.rozum.gitTest.domain.repository.AppRepository
 import ru.rozum.gitTest.domain.repository.GithubRepoRepository
 import ru.rozum.gitTest.domain.repository.UserRepository
 import javax.inject.Singleton
@@ -24,10 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 interface DataModule {
-
-    @Binds
-    @Singleton
-    fun bindAppRepository(impl: AppRepositoryImpl): AppRepository
 
     @Binds
     @Singleton

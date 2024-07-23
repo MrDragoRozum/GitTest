@@ -9,15 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.RepoDetails
-import ru.rozum.gitTest.domain.usecase.GetRepositoryReadmeUseCase
-import ru.rozum.gitTest.domain.usecase.GetRepositoryUseCase
+import ru.rozum.gitTest.domain.repository.GithubRepoRepository
+import ru.rozum.gitTest.exception.NoReadmeException
 import ru.rozum.gitTest.presentation.fragment.DetailInfoFragmentArgs
 import javax.inject.Inject
 
 @HiltViewModel
 class RepositoryInfoViewModel @Inject constructor(
-    private val getRepositoryReadmeUseCase: GetRepositoryReadmeUseCase,
-    private val getRepositoryUseCase: GetRepositoryUseCase,
+    private val githubRepoRepository: GithubRepoRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,13 +33,14 @@ class RepositoryInfoViewModel @Inject constructor(
 
         exceptionReadme = CoroutineExceptionHandler { _, throwable ->
             checkThrowableOnError(throwable)
-            when (throwable.message) {
-                README_EMPTY -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
+            when (throwable) {
+                is NoReadmeException -> _state.value = State.Loaded(ReadmeState.Empty, repoLoaded)
                 else -> {
                     _state.value = State.Loaded(ReadmeState.Error, repoLoaded)
                     isReadmeFailed = true
                 }
             }
+
         }
         exceptionRepo = CoroutineExceptionHandler { _, throwable ->
             checkThrowableOnError(throwable)
@@ -74,7 +74,7 @@ class RepositoryInfoViewModel @Inject constructor(
         }
         viewModelScope.launch(exceptionRepo) {
             _state.value = State.Loading
-            getRepositoryUseCase.invoke(repoId).also {
+            githubRepoRepository.getRepository(repoId).also {
                 beginLoadingReadme(ownerName, repositoryName, branchName, it)
             }
 
@@ -93,7 +93,7 @@ class RepositoryInfoViewModel @Inject constructor(
 
     private fun getReadme(ownerName: String, repositoryName: String, branchName: String) {
         viewModelScope.launch(exceptionReadme) {
-            getRepositoryReadmeUseCase.invoke(ownerName, repositoryName, branchName).also {
+            githubRepoRepository.getRepositoryReadme(ownerName, repositoryName, branchName).also {
                 _state.value = State.Loaded(ReadmeState.Loaded(it), repoLoaded)
             }
         }
