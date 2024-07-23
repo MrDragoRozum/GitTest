@@ -3,30 +3,18 @@ package ru.rozum.gitTest.data.repository
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.rozum.gitTest.data.formatter.Readme
-import ru.rozum.gitTest.data.local.KeyValueStorage
 import ru.rozum.gitTest.data.mapper.toEntity
 import ru.rozum.gitTest.data.network.api.ApiGitHubService
 import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.domain.entity.RepoDetails
-import ru.rozum.gitTest.domain.entity.UserInfo
-import ru.rozum.gitTest.domain.repository.AppRepository
+import ru.rozum.gitTest.domain.repository.GithubRepoRepository
 import javax.inject.Inject
 
-class AppRepositoryImpl @Inject constructor(
+class GithubRepoRepositoryImpl @Inject constructor(
+    @ApplicationContext val context: Context,
     private val apiGitHubService: ApiGitHubService,
-    private val client: KeyValueStorage,
-    @ApplicationContext val context: Context
-) : AppRepository {
-
-    override fun getToken(): String = client.getToken()
-
-    override suspend fun signIn(token: String): UserInfo = ExecutorRequest.execute(
-        response = apiGitHubService.signIn(token)
-    ) { user ->
-        client.saveToken(token)
-        user.toEntity()
-    }
+) : GithubRepoRepository {
 
     override suspend fun getRepositories(): List<Repo> = ExecutorRequest.execute(
         response = apiGitHubService.getRepositories()
@@ -41,7 +29,6 @@ class AppRepositoryImpl @Inject constructor(
     ) { repo ->
         repo.toEntity()
     }
-
 
 
     override suspend fun getRepositoryReadme(

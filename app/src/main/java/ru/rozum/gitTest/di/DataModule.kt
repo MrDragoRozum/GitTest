@@ -14,7 +14,11 @@ import dagger.hilt.components.SingletonComponent
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.data.network.util.ExecutorRequest
 import ru.rozum.gitTest.data.repository.AppRepositoryImpl
+import ru.rozum.gitTest.data.repository.GithubRepoRepositoryImpl
+import ru.rozum.gitTest.data.repository.UserRepositoryImpl
 import ru.rozum.gitTest.domain.repository.AppRepository
+import ru.rozum.gitTest.domain.repository.GithubRepoRepository
+import ru.rozum.gitTest.domain.repository.UserRepository
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -24,6 +28,14 @@ interface DataModule {
     @Binds
     @Singleton
     fun bindAppRepository(impl: AppRepositoryImpl): AppRepository
+
+    @Binds
+    @Singleton
+    fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    fun bindGitHubRepoRepository(impl: GithubRepoRepositoryImpl): GithubRepoRepository
 
     companion object {
 
