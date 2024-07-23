@@ -37,7 +37,7 @@ object ApiFactoryModule {
         val logging = HttpLoggingInterceptor().apply {
             level = Level.BODY
         }
-        val token = keyValueStorage.getToken()
+        val token = keyValueStorage.token
         val client = getOkHttpClient(token, logging)
 
         return Retrofit.Builder()

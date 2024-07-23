@@ -20,5 +20,5 @@ class UserRepositoryImpl @Inject constructor(
         user.toEntity()
     }
 
-    override fun getToken(): String = client.getToken()
+    override fun getToken(): String = client.token
 }
