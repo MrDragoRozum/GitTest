@@ -45,9 +45,5 @@ interface DataModule {
 
             return sharedPreferences
         }
-
-        @Provides
-        fun provideExecutorRequest(@ApplicationContext context: Context): ExecutorRequest =
-            ExecutorRequest(context)
     }
 }

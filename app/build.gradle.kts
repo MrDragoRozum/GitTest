@@ -26,11 +26,11 @@ android {
         release { isMinifyEnabled = false }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     // View Binding
@@ -48,6 +48,9 @@ configurations.all {
 }
 
 dependencies {
+
+    implementation("com.github.skydoves:sandwich-retrofit:2.0.8")
+    implementation("com.github.skydoves:sandwich:2.0.8")
 
     // androidx.security
     implementation(libs.androidx.security.crypto)

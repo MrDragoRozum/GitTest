@@ -1,36 +1,46 @@
 package ru.rozum.gitTest.data.network.util
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
-import retrofit2.Response
-import ru.rozum.gitTest.R
-import ru.rozum.gitTest.data.repository.Level.CODE
-import ru.rozum.gitTest.data.repository.Level.MESSAGE
-import ru.rozum.gitTest.data.repository.Level.MESSAGE_CODE
-import ru.rozum.gitTest.data.repository.entity.LevelException
-import java.net.ConnectException
-import javax.inject.Inject
+import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.retrofit.statusCode
+import ru.rozum.gitTest.exception.ClientConnectionException
+import ru.rozum.gitTest.exception.NoReadmeException
+import ru.rozum.gitTest.exception.ServerConnectionException
 
-class ExecutorRequest @Inject constructor(
-    @ApplicationContext val context: Context
-) {
-    inline fun <T, V> execute(
-        response: Response<T>,
-        levelException: LevelException,
-        result: (T) -> V
-    ): V {
-        if (response.isSuccessful) return result(response.body()!!)
+object ExecutorRequest {
+    inline fun <D, E> execute(
+        response: ApiResponse<D>,
+        result: (D) -> E
+    ): E {
+        var answer: D? = null
 
-        val code = response.code()
-        val message = when (levelException.level) {
-            MESSAGE -> levelException.message
-            CODE -> "$code"
-            MESSAGE_CODE -> context.getString(
-                R.string.message_details,
-                code,
-                levelException.message
-            )
+        response.onSuccess {
+            answer = data
+        }.onError {
+            throw ClientConnectionException(message = toString())
+        }.onException {
+            throw ServerConnectionException(message = toString())
         }
-        throw ConnectException(message)
+
+        val currentAnswer = answer ?: error("answer (D) не может быть null-ом!")
+        return result(currentAnswer)
     }
+
+    inline fun executeReadme(
+        response: ApiResponse<String>,
+        result: (String) -> String
+    ): String {
+        response.onError {
+            if (isReadmeNotExist())
+                throw NoReadmeException(message = toString())
+        }
+
+        val answer = execute(response, result)
+        return answer
+    }
+
+    fun ApiResponse.Failure.Error.isReadmeNotExist(): Boolean = statusCode.code == 404
 }
+

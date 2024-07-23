@@ -1,6 +1,7 @@
 package ru.rozum.gitTest.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +42,7 @@ object ApiFactoryModule {
 
         return Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .addConverterFactory(json.asConverterFactory(CONTENT_TYPE.toMediaType()))
             .client(client)
             .baseUrl(URL_API_GITHUB)
@@ -49,7 +51,6 @@ object ApiFactoryModule {
 
     private fun getOkHttpClient(token: String, logging: HttpLoggingInterceptor) =
         OkHttpClient.Builder()
-
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
 
