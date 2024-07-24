@@ -15,14 +15,14 @@ import ru.rozum.gitTest.databinding.FragmentReposBinding
 import ru.rozum.gitTest.presentation.fragment.adapter.RepositoryListAdapter
 import ru.rozum.gitTest.presentation.fragment.util.collect
 import ru.rozum.gitTest.presentation.fragment.util.setVisibility
-import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel
-import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoriesListViewModel.State
+import ru.rozum.gitTest.presentation.fragment.viewModel.ReposViewModel
+import ru.rozum.gitTest.presentation.fragment.viewModel.ReposViewModel.State
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReposFragment : Fragment(R.layout.fragment_repos) {
     private val binding by viewBinding(FragmentReposBinding::bind)
-    private val viewModel by viewModels<RepositoriesListViewModel>()
+    private val viewModel by viewModels<ReposViewModel>()
     private val args by navArgs<ReposFragmentArgs>()
 
     @Inject
@@ -56,11 +56,10 @@ class ReposFragment : Fragment(R.layout.fragment_repos) {
                 state,
                 State.Empty
             )
-            binding.includeSomethingErrorRepoList.root.visibility =
-                setVisibility(
-                    state,
-                    State.SomethingError
-                )
+            binding.includeSomethingErrorRepoList.root.visibility = setVisibility(
+                state,
+                State.SomethingError
+            )
             binding.includeConnectionErrorRepoList.root.visibility = setVisibility(
                 state,
                 State.ConnectionError
