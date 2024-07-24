@@ -61,7 +61,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun state() {
-        collectSmall(viewLifecycleOwner, viewModel.state) {
+        collect(viewLifecycleOwner, viewModel.state) {
             installState(it)
         }
     }
@@ -82,7 +82,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun action() {
-        collectSmall(viewLifecycleOwner, viewModel.actions) {
+        collect(viewLifecycleOwner, viewModel.actions) {
             installAction(it)
         }
     }
@@ -105,7 +105,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun token() {
-        collectSmall(viewLifecycleOwner, viewModel.token) {
+        collect(viewLifecycleOwner, viewModel.token) {
             binding.textInputTextSignIn.setText(it)
         }
     }

@@ -22,10 +22,12 @@ retrofit = "2.9.0"
 hilt = "2.51"
 kotlinSerialization = "1.9.23"
 retrofit2KotlinxSerializationConverter = "1.0.0"
+sandwich = "2.0.8"
 securityCrypto = "1.1.0-alpha06"
 securityCryptoKtxVersion = "1.1.0-alpha06"
 securityState = "1.0.0-alpha03"
 securityCryptoKtx = "1.0.0"
+viewbindingpropertydelegateNoreflection = "1.5.9"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,7 +57,10 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 prism4j-bundler = { module = "io.noties:prism4j-bundler", version.ref = "prism4jBundler" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
+sandwich = { module = "com.github.skydoves:sandwich", version.ref = "sandwich" }
+sandwich-retrofit = { module = "com.github.skydoves:sandwich-retrofit", version.ref = "sandwich" }
 syntax-highlight = { module = "io.noties.markwon:syntax-highlight", version.ref = "core" }
+viewbindingpropertydelegate-noreflection = { module = "com.github.kirich1409:viewbindingpropertydelegate-noreflection", version.ref = "viewbindingpropertydelegateNoreflection" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

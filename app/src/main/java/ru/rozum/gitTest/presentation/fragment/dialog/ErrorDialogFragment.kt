@@ -8,12 +8,10 @@ import ru.rozum.gitTest.R
 
 class ErrorDialogFragment : DialogFragment() {
 
-    private lateinit var error: String
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        error = requireArguments().getString(KEY_ERROR) ?: getString(R.string.error)
+    private val error by lazy {
+        requireArguments().getString(KEY_ERROR) ?: getString(R.string.error)
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = requireActivity().let {
         AlertDialog.Builder(it).apply {
             setTitle(getString(R.string.error))
@@ -28,6 +26,7 @@ class ErrorDialogFragment : DialogFragment() {
                 putString(KEY_ERROR, error)
             }
         }
+
         private const val KEY_ERROR = "key_error"
     }
 }

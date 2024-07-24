@@ -60,7 +60,7 @@ class DetailInfoFragment : Fragment() {
     }
 
     private fun state() {
-        collectSmall(viewLifecycleOwner, viewModel.state) {
+        collect(viewLifecycleOwner, viewModel.state) {
             installState(it)
         }
     }

@@ -30,17 +30,17 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         with(binding) {
             textViewUriRepo.text = repo.htmlUser
             textViewLicenceOfRepo.text = repo.license
-            textViewForks.text = installString(
+            textViewForks.text = installStatusRepo(
                 repo.forks,
                 R.color.green_forks,
                 R.string.forks
             )
-            textViewStars.text = installString(
+            textViewStars.text = installStatusRepo(
                 repo.stars,
                 R.color.yellow_stars,
                 R.string.stars
             )
-            textViewWatchers.text = installString(
+            textViewWatchers.text = installStatusRepo(
                 repo.watchers,
                 R.color.blue_watchers,
                 R.string.watchers
@@ -54,14 +54,14 @@ class DetailsInfoRepoView @JvmOverloads constructor(
         setPadding(16f.toPX().toInt())
     }
 
-    private fun installString(count: Int, color: Int, string: Int): Spanned {
+    private fun installStatusRepo(count: Int, color: Int, string: Int): Spanned {
         val colorRGB = context.getString(color).replaceFirst(
             PATTERN_FIND_FIRST_TWO_F,
             DELETE_THEM
         )
-        val gotString = context.getString(string)
-        val formatted = COLORFUL_STATUS_FORMATTED.format(colorRGB, count, gotString)
-        return HtmlCompat.fromHtml(formatted, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val status = context.getString(string)
+        val formattedStatus = COLORFUL_STATUS_FORMATTED.format(colorRGB, count, status)
+        return HtmlCompat.fromHtml(formattedStatus, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun Float.toPX() = TypedValue.applyDimension(

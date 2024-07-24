@@ -49,8 +49,12 @@ configurations.all {
 
 dependencies {
 
-    implementation("com.github.skydoves:sandwich-retrofit:2.0.8")
-    implementation("com.github.skydoves:sandwich:2.0.8")
+    // ViewBindingPropertyDelegate
+    implementation(libs.viewbindingpropertydelegate.noreflection)
+
+    // Sandwich
+    implementation(libs.sandwich.retrofit)
+    implementation(libs.sandwich)
 
     // androidx.security
     implementation(libs.androidx.security.crypto)
