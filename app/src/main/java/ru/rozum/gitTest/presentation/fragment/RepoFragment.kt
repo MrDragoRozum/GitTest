@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import io.noties.markwon.Markwon
-import kotlinx.coroutines.launch
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentRepoBinding
 import ru.rozum.gitTest.presentation.fragment.util.collect
@@ -65,9 +63,15 @@ class RepoFragment : Fragment(R.layout.fragment_repo) {
         if (state is ReadmeState.Loaded) markwon.setMarkdown(binding.textViewReadme, state.markdown)
         if (state is ReadmeState.Empty) binding.textViewReadme.text = getString(R.string.no_readme)
 
-        binding.progressBarReadme.visibility = setVisibility(state, ReadmeState.Loading)
-        binding.includeConnectionErrorRepoDetails.root.visibility =
-            setVisibility(state, ReadmeState.Error)
+        binding.progressBarReadme.visibility = setVisibility(
+            state,
+            ReadmeState.Loading
+        )
+
+        binding.includeConnectionErrorRepoDetails.root.visibility = setVisibility(
+            state,
+            ReadmeState.Error
+        )
     }
 
     private fun installListeners() {
