@@ -1,110 +1,97 @@
 package ru.rozum.gitTest.presentation.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentAuthBinding
 import ru.rozum.gitTest.presentation.fragment.dialog.ErrorDialogFragment
-import ru.rozum.gitTest.presentation.fragment.util.*
+import ru.rozum.gitTest.presentation.fragment.util.collect
+import ru.rozum.gitTest.presentation.fragment.util.setVisibility
 import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel
-import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel.*
+import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel.Action
+import ru.rozum.gitTest.presentation.fragment.viewModel.AuthViewModel.State
 
 @AndroidEntryPoint
-class AuthFragment : Fragment() {
-
-    private var _binding: FragmentAuthBinding? = null
-    private val binding get() = _binding!!
-
+class AuthFragment : Fragment(R.layout.fragment_auth) {
+    private val binding by viewBinding(FragmentAuthBinding::bind)
     private val viewModel by viewModels<AuthViewModel>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAuthBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        install()
+        installFragment()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun installFragment() {
+        installListeners()
+        installState()
+        installActions()
+        installToken()
     }
 
-    private fun install() {
-        listeners()
-        state()
-        action()
-        token()
-    }
-
-    private fun listeners() {
+    private fun installListeners() {
         binding.buttonSignIn.setOnClickListener {
-            binding.textInputTextSignIn.text.toString().also {
-                viewModel.onSignButtonPressed(it)
+            binding.textInputTextSignIn.text.toString().also { token ->
+                viewModel.onSignButtonPressed(token)
             }
         }
+
         binding.textInputTextSignIn.addTextChangedListener {
             binding.textInputLayoutSignIn.error = null
         }
     }
 
-    private fun state() {
-        collect(viewLifecycleOwner, viewModel.state) {
-            installState(it)
+    private fun installState() {
+        collect(viewLifecycleOwner, viewModel.state) { state ->
+            binding.progressBarSignIn.visibility = setVisibility(state, State.Loading)
+            changeStateAuthDependingValidInput(state)
         }
     }
 
-    private fun installState(state: State) {
-        binding.progressBarSignIn.visibility = setVisibility(state, State.Loading)
-
+    private fun changeStateAuthDependingValidInput(state: State) {
         if (state is State.InvalidInput) {
             returnBeginningStateButtonSignIn()
             binding.textInputLayoutSignIn.error = state.reason
         } else {
             binding.buttonSignIn.apply {
-                text = EMPTY_TEXT
+                text = null
                 isClickable = false
             }
             binding.textInputLayoutSignIn.error = null
         }
     }
 
-    private fun action() {
-        collect(viewLifecycleOwner, viewModel.actions) {
-            installAction(it)
-        }
-    }
-
-    private fun installAction(action: Action) {
-        when (action) {
-            is Action.RouteToMain -> findNavController().navigate(
-                AuthFragmentDirections.actionAuthFragmentToRepositoriesListFragment(
-                    action.user
-                )
-            )
-
-            is Action.ShowError -> {
-                ErrorDialogFragment.newInstance(action.message)
-                    .show(requireActivity().supportFragmentManager, null)
-                binding.progressBarSignIn.visibility = View.GONE
-                returnBeginningStateButtonSignIn()
+    private fun installActions() {
+        collect(viewLifecycleOwner, viewModel.actions) { action ->
+            when (action) {
+                is Action.RouteToMain -> navigateToRepositoriesFragment(action)
+                is Action.ShowError -> showErrorDialog(action)
             }
         }
     }
 
-    private fun token() {
+    private fun navigateToRepositoriesFragment(action: Action.RouteToMain) {
+        findNavController().navigate(
+            AuthFragmentDirections.actionAuthFragmentToRepositoriesListFragment(
+                action.user
+            )
+        )
+    }
+
+    private fun showErrorDialog(action: Action.ShowError) {
+        ErrorDialogFragment.newInstance(action.message)
+            .show(requireActivity().supportFragmentManager, null)
+        binding.progressBarSignIn.visibility = View.GONE
+        returnBeginningStateButtonSignIn()
+    }
+
+
+    private fun installToken() {
         collect(viewLifecycleOwner, viewModel.token) {
             binding.textInputTextSignIn.setText(it)
         }
@@ -115,9 +102,5 @@ class AuthFragment : Fragment() {
             text = getString(R.string.sign)
             isClickable = true
         }
-    }
-
-    private companion object {
-        const val EMPTY_TEXT = ""
     }
 }
