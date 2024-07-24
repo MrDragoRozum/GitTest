@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import ru.rozum.gitTest.domain.entity.RepoDetails
 import ru.rozum.gitTest.domain.repository.GithubRepoRepository
 import ru.rozum.gitTest.exception.NoReadmeException
-import ru.rozum.gitTest.presentation.fragment.DetailInfoFragmentArgs
+import ru.rozum.gitTest.presentation.fragment.RepoFragmentArgs
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +20,7 @@ class RepositoryInfoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val args = DetailInfoFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val args = RepoFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val exceptionReadme: CoroutineExceptionHandler
     private val exceptionRepo: CoroutineExceptionHandler
     private val _state: MutableStateFlow<State>
@@ -58,7 +58,7 @@ class RepositoryInfoViewModel @Inject constructor(
 
     private fun setDataInGetRepository() {
         with(args) {
-            getRepository(repo.id, userInfo.login, repo.name, repo.branch)
+            getRepository(repo.id, user.login, repo.name, repo.branch)
         }
     }
 
