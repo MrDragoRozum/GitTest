@@ -7,8 +7,11 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import ru.rozum.gitTest.R
 import ru.rozum.gitTest.domain.entity.User
 import ru.rozum.gitTest.domain.repository.UserRepository
+import ru.rozum.gitTest.exception.ClientConnectionException
+import ru.rozum.gitTest.exception.ServerConnectionException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,9 +31,10 @@ class AuthViewModel @Inject constructor(
     private val exception = CoroutineExceptionHandler { _, throwable ->
         viewModelScope.launch {
             when (throwable) {
-                is IllegalArgumentException -> _state.emit(State.InvalidInput(throwable.message))
-                is Exception -> _actions.emit(Action.ShowError(throwable.message))
-                else -> throw throwable
+                is ClientConnectionException,
+                is ServerConnectionException -> _actions.emit(
+                    Action.ShowError(throwable.message)
+                )
             }
         }
     }
@@ -41,24 +45,23 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun onSignButtonPressed(token: String) {
-        sign(token)
-    }
-
-    private fun sign(token: String) {
+    fun signIn(token: String) {
         viewModelScope.launch(exception) {
-            beginToSign(token)
+            if (isInvalidToken(token)) {
+                _state.emit(State.InvalidInput(R.string.invalid_token))
+                return@launch
+            }
+
+            _state.emit(State.Loading)
+            userRepository.signIn(token).also { _actions.emit(Action.RouteToMain(it)) }
         }
     }
 
-    private suspend fun beginToSign(token: String) {
-        _state.emit(State.Loading)
-        userRepository.signIn(token).also { _actions.emit(Action.RouteToMain(it)) }
-    }
+    private fun isInvalidToken(token: String) = !Regex("^ghp_[a-zA-Z0-9]{36}+\$").matches(token)
 
     sealed interface State {
         data object Loading : State
-        data class InvalidInput(val reason: String? = null) : State
+        data class InvalidInput(val reasonId: Int) : State
     }
 
     sealed interface Action {

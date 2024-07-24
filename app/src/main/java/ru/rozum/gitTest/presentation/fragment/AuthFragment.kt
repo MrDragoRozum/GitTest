@@ -37,7 +37,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun installListeners() {
         binding.buttonSignIn.setOnClickListener {
             binding.textInputTextSignIn.text.toString().also { token ->
-                viewModel.onSignButtonPressed(token)
+                viewModel.signIn(token)
             }
         }
 
@@ -56,7 +56,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun changeStateAuthDependingValidInput(state: State) {
         if (state is State.InvalidInput) {
             returnBeginningStateButtonSignIn()
-            binding.textInputLayoutSignIn.error = state.reason
+            binding.textInputLayoutSignIn.error = getString(state.reasonId)
         } else {
             binding.buttonSignIn.apply {
                 text = null
@@ -84,8 +84,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     }
 
     private fun showErrorDialog(action: Action.ShowError) {
-        ErrorDialogFragment.newInstance(action.message)
+        ErrorDialogFragment
+            .newInstance(action.message)
             .show(requireActivity().supportFragmentManager, null)
+
         binding.progressBarSignIn.visibility = View.GONE
         returnBeginningStateButtonSignIn()
     }
