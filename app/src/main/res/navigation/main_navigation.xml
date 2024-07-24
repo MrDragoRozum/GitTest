@@ -31,9 +31,9 @@
 
     <fragment
         android:id="@+id/detailInfoFragment"
-        android:name="ru.rozum.gitTest.presentation.fragment.DetailInfoFragment"
+        android:name="ru.rozum.gitTest.presentation.fragment.RepoFragment"
         android:label="fragment_detail_info"
-        tools:layout="@layout/fragment_detail_info" >
+        tools:layout="@layout/fragment_repo" >
         <argument
             android:name="userInfo"
             app:argType="ru.rozum.gitTest.domain.entity.User" />
