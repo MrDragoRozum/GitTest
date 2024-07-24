@@ -3,6 +3,7 @@ package ru.rozum.gitTest.data.network.util
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.retrofit.statusCode
 import ru.rozum.gitTest.exception.ClientConnectionException
@@ -19,9 +20,9 @@ object ExecutorRequest {
         response.onSuccess {
             answer = data
         }.onError {
-            throw ClientConnectionException(message = toString())
-        }.onException {
             throw ServerConnectionException(message = toString())
+        }.onException {
+            throw ClientConnectionException(message = toString())
         }
 
         val currentAnswer = answer ?: error("answer (D) не может быть null-ом!")

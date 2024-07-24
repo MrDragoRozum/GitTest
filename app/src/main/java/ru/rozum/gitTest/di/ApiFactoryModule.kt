@@ -69,6 +69,7 @@ object ApiFactoryModule {
                     val newRequest = originalRequest.newBuilder()
                         .headers(newHeaders)
                         .build()
+                        // TODO: Улучшить внешность в этом месте
 
                     return@addInterceptor chain.proceed(newRequest)
                 }
