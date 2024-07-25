@@ -58,19 +58,7 @@ object ApiFactoryModule {
                     return@addInterceptor chain.proceed(originalRequest)
 
                 if (isRequestSignInGitHub(originalRequest)) {
-                    val currentHeader = originalRequest.headers[HEADER_TOKEN]
-                        ?: error("Header \"Authorization\" не найден!")
-
-                    val newHeaderBody = "bearer $currentHeader"
-                    val newHeaders = originalRequest.headers.newBuilder().set(
-                        HEADER_TOKEN, newHeaderBody
-                    ).build()
-
-                    val newRequest = originalRequest.newBuilder()
-                        .headers(newHeaders)
-                        .build()
-                        // TODO: Улучшить внешность в этом месте
-
+                    val newRequest = getNewRequestWithFormattedToken(originalRequest)
                     return@addInterceptor chain.proceed(newRequest)
                 }
 
@@ -79,6 +67,27 @@ object ApiFactoryModule {
             }
             .addInterceptor(logging)
             .build()
+
+    private fun isRequestGetReadme(request: Request) =
+        request.url.toString().contains(URL_RAW_GITHUB)
+
+    private fun isRequestSignInGitHub(request: Request) =
+        request.url.toString() == URL_API_GITHUB + "user"
+
+    private fun getNewRequestWithFormattedToken(originalRequest: Request): Request {
+        val currentHeader = originalRequest.headers[HEADER_TOKEN]
+            ?: error("Header \"Authorization\" не найден!")
+
+        val newHeaderBody = "bearer $currentHeader"
+        val newHeader = originalRequest.headers.newBuilder().set(
+            HEADER_TOKEN, newHeaderBody
+        ).build()
+
+        val newRequest = originalRequest.newBuilder()
+            .headers(newHeader)
+            .build()
+        return newRequest
+    }
 
     private fun getNewRequestWithAddedHeaders(originalRequest: Request, token: String): Request {
         val newHeaders = originalRequest.headers.newBuilder()
@@ -93,13 +102,6 @@ object ApiFactoryModule {
         return newRequest
     }
 
-
-    private fun isRequestGetReadme(request: Request) =
-        request.url.toString().contains(URL_RAW_GITHUB)
-
-    private fun isRequestSignInGitHub(request: Request) =
-        request.url.toString() == URL_API_GITHUB + "user"
-
     private const val URL_API_GITHUB = "https://api.github.com/"
     private const val URL_RAW_GITHUB = "https://raw.githubusercontent.com/"
 
@@ -112,6 +114,3 @@ object ApiFactoryModule {
     private const val HEADER_TOKEN = "Authorization"
     private const val HEADER_TOKEN_BODY = "bearer "
 }
-
-
-
