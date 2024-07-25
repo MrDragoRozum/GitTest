@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.fragment.ReposFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/very_dark_blue"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/repositories_toolbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRepos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:itemCount="5"
+        tools:listitem="@layout/item_repo" />
+
+    <include
+        android:id="@+id/includeConnectionErrorRepoList"
+        layout="@layout/connection_error_include"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <include
+        android:id="@+id/includeEmptyRepoList"
+        layout="@layout/empty_include"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <include
+        android:id="@+id/includeSomethingErrorRepoList"
+        layout="@layout/something_error_include"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <ProgressBar
+        android:id="@+id/progressBarRepoDetails"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:indeterminateTint="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

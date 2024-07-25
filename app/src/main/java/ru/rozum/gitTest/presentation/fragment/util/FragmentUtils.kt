@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-inline fun <T> collectSmall(
+inline fun <T> collect(
     lifecycle: LifecycleOwner,
     consumer: Flow<T>,
     crossinline function: (T) -> Unit
