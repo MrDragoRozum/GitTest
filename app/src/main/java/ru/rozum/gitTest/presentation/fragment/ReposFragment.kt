@@ -12,6 +12,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentReposBinding
+import ru.rozum.gitTest.domain.entity.Repo
 import ru.rozum.gitTest.presentation.fragment.adapter.RepositoryListAdapter
 import ru.rozum.gitTest.presentation.fragment.util.collect
 import ru.rozum.gitTest.presentation.fragment.util.setVisibility
@@ -83,10 +84,12 @@ class ReposFragment : Fragment(R.layout.fragment_repos) {
                 viewModel.getRepositories()
             }
         }
-        adapter.onClickRepo = { repo ->
-            findNavController().navigate(
-                ReposFragmentDirections.actionReposFragmentToRepoFragment(args.user, repo)
-            )
-        }
+        adapter.onClickRepo = ::navigateToRepoFragment
+    }
+
+    private fun navigateToRepoFragment(repo: Repo) {
+        findNavController().navigate(
+            ReposFragmentDirections.actionReposFragmentToRepoFragment(args.user, repo)
+        )
     }
 }

@@ -82,5 +82,4 @@ class RepoFragment : Fragment(R.layout.fragment_repo) {
             viewModel.getRepository()
         }
     }
-
 }

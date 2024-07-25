@@ -8,9 +8,9 @@ object Readme {
         branchName: String
     ): String {
         /*
-    * Ищет в README.md подобные подстроки: images/screenshot_1.png screenshots/image1.jpg и т.п.
-    * дабы получилось в итоге https://raw.githubusercontent.com/owner/project/branch/images/screenshot_1.png
-    * в противном случае Markwon не сможет загрузить графический файл
+        * Ищет в README.md подобные подстроки: images/screenshot_1.png screenshots/image1.jpg и т.п.
+        * дабы получилось в итоге https://raw.githubusercontent.com/owner/project/branch/images/screenshot_1.png
+        * в противном случае Markwon не сможет загрузить графический файл
         */
         val regexParsingImagesFromFolderRepo =
             Regex("(?<=!\\[alt text]\\(|\\[logo]:)(\\s)*(\\w+)/(\\w+)[.](\\w{2,3})(?=[)]?)")

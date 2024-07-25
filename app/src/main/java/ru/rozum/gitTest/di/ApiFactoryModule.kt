@@ -10,8 +10,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ru.rozum.gitTest.data.local.KeyValueStorage
@@ -34,11 +32,8 @@ object ApiFactoryModule {
             isLenient = true
             ignoreUnknownKeys = true
         }
-        val logging = HttpLoggingInterceptor().apply {
-            level = Level.BODY
-        }
         val token = keyValueStorage.token
-        val client = getOkHttpClient(token, logging)
+        val client = getOkHttpClient(token)
 
         return Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create())
@@ -49,7 +44,7 @@ object ApiFactoryModule {
             .build()
     }
 
-    private fun getOkHttpClient(token: String, logging: HttpLoggingInterceptor) =
+    private fun getOkHttpClient(token: String) =
         OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
@@ -65,7 +60,6 @@ object ApiFactoryModule {
                 val newRequest = getNewRequestWithAddedHeaders(originalRequest, token)
                 chain.proceed(newRequest)
             }
-            .addInterceptor(logging)
             .build()
 
     private fun isRequestGetReadme(request: Request) =

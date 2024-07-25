@@ -3,7 +3,6 @@ package ru.rozum.gitTest.data.network.util
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
-import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.retrofit.statusCode
 import ru.rozum.gitTest.exception.ClientConnectionException
@@ -44,4 +43,3 @@ object ExecutorRequest {
 
     fun ApiResponse.Failure.Error.isReadmeNotExist(): Boolean = statusCode.code == 404
 }
-
