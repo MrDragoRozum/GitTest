@@ -12,15 +12,15 @@ import ru.rozum.gitTest.R
 import ru.rozum.gitTest.databinding.FragmentRepoBinding
 import ru.rozum.gitTest.presentation.fragment.util.collect
 import ru.rozum.gitTest.presentation.fragment.util.setVisibility
-import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel
-import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel.ReadmeState
-import ru.rozum.gitTest.presentation.fragment.viewModel.RepositoryInfoViewModel.State
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepoViewModel
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepoViewModel.ReadmeState
+import ru.rozum.gitTest.presentation.fragment.viewModel.RepoViewModel.State
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class RepoFragment : Fragment(R.layout.fragment_repo) {
     private val binding by viewBinding(FragmentRepoBinding::bind)
-    private val viewModel by viewModels<RepositoryInfoViewModel>()
+    private val viewModel by viewModels<RepoViewModel>()
 
     @Inject
     lateinit var markwon: Markwon
@@ -51,8 +51,8 @@ class RepoFragment : Fragment(R.layout.fragment_repo) {
 
     private fun changeStateRepoIfLoaded(state: State) {
         if (state is State.Loaded) {
-            binding.toolbarRepoDetails.title = state.githubRepo.name
-            binding.detailsInfoRepoView.repoDetails = state.githubRepo
+            binding.toolbarRepoDetails.title = state.repo.name
+            binding.detailsInfoRepoView.repoDetails = state.repo
             binding.detailsInfoRepoView.visibility = View.VISIBLE
             binding.textViewReadme.visibility = View.VISIBLE
             installReadmeState(state.readmeState)
@@ -79,7 +79,7 @@ class RepoFragment : Fragment(R.layout.fragment_repo) {
             findNavController().popBackStack()
         }
         binding.includeConnectionErrorRepoDetails.buttonRetryConnectionError.setOnClickListener {
-            viewModel.retry()
+            viewModel.getRepository()
         }
     }
 
