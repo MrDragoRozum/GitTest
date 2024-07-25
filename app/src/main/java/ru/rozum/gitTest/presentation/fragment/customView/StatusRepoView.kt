@@ -8,17 +8,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.HtmlCompat
 import androidx.core.view.setPadding
 import ru.rozum.gitTest.R
-import ru.rozum.gitTest.databinding.DetailsInfoRepoViewBinding
+import ru.rozum.gitTest.databinding.StatusRepoViewBinding
 import ru.rozum.gitTest.domain.entity.RepoDetails
 
-class DetailsInfoRepoView @JvmOverloads constructor(
+class StatusRepoView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attributeSet, defStyleAttr, defStyleRes) {
 
-    private val binding: DetailsInfoRepoViewBinding
+    private val binding: StatusRepoViewBinding
 
     var repoDetails: RepoDetails? = null
         set(value) {
@@ -49,8 +49,8 @@ class DetailsInfoRepoView @JvmOverloads constructor(
     }
 
     init {
-        inflate(context, R.layout.details_info_repo_view, this)
-        binding = DetailsInfoRepoViewBinding.bind(this)
+        inflate(context, R.layout.status_repo_view, this)
+        binding = StatusRepoViewBinding.bind(this)
         setPadding(16f.toPX().toInt())
     }
 
