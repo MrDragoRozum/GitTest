@@ -3,7 +3,7 @@
 
 Android-приложение, которое представляет собой простой Github-клиент. У него три экрана: авторизация, список проектов (читай как репозиторий), детальная информация проекта. 
 
-**Авторизация**: клиент требует от вас пользовательский (не от организации) токен ([Personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)),
+**Авторизация**: клиент требует от вас пользовательский _(не от организации)_ токен ([Personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)),
 он своем очереди должен предоставлять доступ к _repo_. При успешной авторизации токен автоматически сохраниться в клиенте и повторно вводить не нужно.
 В случае ошибки (код HTTP, некорректный формат токена) будет выведена  соответствующая информация пользователю.
 
